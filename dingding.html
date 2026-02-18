@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DingDing 番茄钟</title>
+    <style>
+/* ============================================
+   DingDing 番茄钟 - 毛玻璃风格样式
+   ============================================ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
+}
+
+.bg-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #e94560, #c62a7a);
+    top: -100px;
+    left: -100px;
+    animation: float-1 18s ease-in-out infinite;
+}
+
+.blob-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #533483, #7952b3);
+    bottom: -80px;
+    right: -80px;
+    animation: float-2 22s ease-in-out infinite;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #0f3460, #1687a7);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: float-3 20s ease-in-out infinite;
+}
+
+@keyframes float-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(80px, 60px) scale(1.1); }
+    66% { transform: translate(-40px, 100px) scale(0.95); }
+}
+
+@keyframes float-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-60px, -80px) scale(1.15); }
+    66% { transform: translate(50px, -40px) scale(0.9); }
+}
+
+@keyframes float-3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    33% { transform: translate(-40%, -60%) scale(1.1); }
+    66% { transform: translate(-60%, -40%) scale(0.95); }
+}
+
+.app-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.setup-card {
+    padding: 48px 36px;
+    text-align: center;
+    width: 100%;
+}
+
+.app-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFB3BA, #FFC3A0, #FFE082);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 36px;
+}
+
+.time-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.glass-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.glass-btn:active {
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.time-btn {
+    font-family: inherit;
+}
+
+#timer-screen {
+    justify-content: flex-start;
+    padding-top: 10vh;
+    min-height: 100vh;
+}
+
+.stats-bar {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.stat-item {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-value {
+    font-size: 28px;
+    background: linear-gradient(135deg, #FFE082, #FFB300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.count-value {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.flower-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 350px;
+    margin-bottom: 24px;
+}
+
+.flower {
+    transition: filter 1.2s ease;
+}
+
+.flower .flower-head {
+    transform-origin: 100px 160px;
+    transition: transform 1.2s ease;
+}
+
+.flower .leaf {
+    transition: transform 1s ease, fill 1.2s ease;
+}
+
+.flower .leaf-vein {
+    transition: stroke 1.2s ease;
+}
+
+.flower .stem {
+    transition: stroke 1.2s ease;
+}
+
+.flower:not(.wilted) .flower-head {
+    animation: gentle-sway 4s ease-in-out infinite;
+}
+
+@keyframes gentle-sway {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+}
+
+.flower.wilted {
+    filter: saturate(0.15) brightness(0.65) sepia(0.5);
+}
+
+.flower.wilted .flower-head {
+    transform: rotate(45deg);
+    animation: none;
+}
+
+.flower.wilted .left-leaf {
+    transform-origin: 100px 215px;
+    transform: rotate(15deg) translateY(8px);
+}
+
+.flower.wilted .right-leaf {
+    transform-origin: 100px 252px;
+    transform: rotate(-15deg) translateY(8px);
+}
+
+.controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+}
+
+.control-btn {
+    font-family: inherit;
+    min-width: 160px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    animation: modal-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modal-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-text {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: none;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.ding-btn {
+    background: linear-gradient(135deg, #66BB6A, #43A047);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+}
+
+.ding-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(76, 175, 80, 0.4);
+}
+
+.ding-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.wei-btn {
+    background: linear-gradient(135deg, #78909C, #546E7A);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(84, 110, 122, 0.3);
+}
+
+.wei-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(84, 110, 122, 0.4);
+}
+
+.wei-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+#completion-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.completion-card {
+    padding: 48px 36px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: modal-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.completion-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFE082, #FFB300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.completion-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 32px;
+}
+
+.completion-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.completion-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.completion-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.completion-stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.5px;
+}
+
+@keyframes timer-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.time-value.running {
+    animation: timer-pulse 2s ease-in-out infinite;
+}
+
+@media (max-width: 400px) {
+    .app-container { padding: 12px; }
+    .setup-card { padding: 36px 24px; }
+    .app-title { font-size: 26px; }
+    .stats-bar { gap: 8px; }
+    .stat-item { padding: 12px 8px; }
+    .stat-value { font-size: 20px; }
+    .time-value { font-size: 22px; }
+    .stat-label { font-size: 10px; }
+    .modal-content { padding: 28px 20px; }
+    .modal-text { font-size: 17px; }
+    .modal-btn { font-size: 18px; padding: 14px 18px; }
+}
+
+@media (max-height: 700px) {
+    #timer-screen { padding-top: 4vh; }
+    .flower-container { min-height: 280px; }
+    .flower-container svg { width: 180px; height: 280px; }
+}
+    </style>
+</head>
+<body>
+    <!-- Animated background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-container">
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="screen">
+            <div class="setup-card glass-card">
+                <h1 class="app-title">DingDing 番茄钟</h1>
+                <p class="subtitle">选择你的专注时间</p>
+                <div class="time-options">
+                    <button class="time-btn glass-btn" data-minutes="15">15 分钟</button>
+                    <button class="time-btn glass-btn" data-minutes="30">30 分钟</button>
+                    <button class="time-btn glass-btn" data-minutes="45">45 分钟</button>
+                    <button class="time-btn glass-btn" data-minutes="60">60 分钟</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Screen -->
+        <div id="timer-screen" class="screen hidden">
+            <div class="stats-bar">
+                <div class="stat-item glass-card">
+                    <span class="stat-label">剩余时间</span>
+                    <span id="time-display" class="stat-value time-value">00:00</span>
+                </div>
+                <div class="stat-item glass-card">
+                    <span class="stat-label">顶的次数</span>
+                    <span id="ding-count" class="stat-value count-value">0</span>
+                </div>
+                <div class="stat-item glass-card">
+                    <span class="stat-label">萎的次数</span>
+                    <span id="wei-count" class="stat-value count-value">0</span>
+                </div>
+            </div>
+
+            <div class="flower-container">
+                <svg id="flower-svg" class="flower" viewBox="0 0 200 320" width="220" height="350">
+                    <defs>
+                        <radialGradient id="petal-grad-1" cx="50%" cy="30%" r="70%">
+                            <stop offset="0%" stop-color="#FFB3BA"/>
+                            <stop offset="100%" stop-color="#FF6B81"/>
+                        </radialGradient>
+                        <radialGradient id="petal-grad-2" cx="50%" cy="30%" r="70%">
+                            <stop offset="0%" stop-color="#FFC3A0"/>
+                            <stop offset="100%" stop-color="#FF7E67"/>
+                        </radialGradient>
+                        <radialGradient id="center-grad" cx="40%" cy="40%" r="60%">
+                            <stop offset="0%" stop-color="#FFE082"/>
+                            <stop offset="100%" stop-color="#FFB300"/>
+                        </radialGradient>
+                    </defs>
+
+                    <path class="stem lower-stem" d="M100,160 C100,200 100,250 100,295" stroke="#66BB6A" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path class="leaf left-leaf" d="M100,215 C78,198 55,205 50,222 C55,232 78,230 100,215Z" fill="#81C784"/>
+                    <path class="leaf-vein" d="M98,216 C82,210 65,215 55,224" stroke="#66BB6A" stroke-width="1" fill="none"/>
+                    <path class="leaf right-leaf" d="M100,252 C122,235 145,242 150,259 C145,269 122,267 100,252Z" fill="#81C784"/>
+                    <path class="leaf-vein" d="M102,253 C118,247 135,252 145,261" stroke="#66BB6A" stroke-width="1" fill="none"/>
+
+                    <g class="flower-head">
+                        <path class="stem upper-stem" d="M100,105 L100,160" stroke="#66BB6A" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-1)" opacity="0.8" transform="rotate(0 100 92)"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-2)" opacity="0.8" transform="rotate(60 100 92)"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-1)" opacity="0.8" transform="rotate(120 100 92)"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-2)" opacity="0.8" transform="rotate(180 100 92)"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-1)" opacity="0.8" transform="rotate(240 100 92)"/>
+                        <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-2)" opacity="0.8" transform="rotate(300 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-2)" opacity="0.9" transform="rotate(30 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-1)" opacity="0.9" transform="rotate(90 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-2)" opacity="0.9" transform="rotate(150 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-1)" opacity="0.9" transform="rotate(210 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-2)" opacity="0.9" transform="rotate(270 100 92)"/>
+                        <ellipse class="petal inner-petal" cx="100" cy="66" rx="12" ry="24" fill="url(#petal-grad-1)" opacity="0.9" transform="rotate(330 100 92)"/>
+                        <circle class="center-outer" cx="100" cy="92" r="20" fill="url(#center-grad)"/>
+                        <circle class="center-inner" cx="100" cy="92" r="12" fill="#F9A825"/>
+                        <circle cx="96" cy="89" r="2" fill="#F57F17" opacity="0.6"/>
+                        <circle cx="104" cy="89" r="2" fill="#F57F17" opacity="0.6"/>
+                        <circle cx="100" cy="96" r="2" fill="#F57F17" opacity="0.6"/>
+                        <circle cx="93" cy="94" r="1.5" fill="#F57F17" opacity="0.4"/>
+                        <circle cx="107" cy="94" r="1.5" fill="#F57F17" opacity="0.4"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="controls">
+                <button id="reset-btn" class="control-btn glass-btn">重新开始</button>
+            </div>
+        </div>
+
+        <!-- Completion overlay -->
+        <div id="completion-screen" class="screen hidden">
+            <div class="completion-card glass-card">
+                <h2 class="completion-title">专注完成！</h2>
+                <p class="completion-subtitle">辛苦了，休息一下吧</p>
+                <div class="completion-stats">
+                    <div class="completion-stat">
+                        <span class="completion-stat-value" id="final-duration">0</span>
+                        <span class="completion-stat-label">专注时长(分钟)</span>
+                    </div>
+                    <div class="completion-stat">
+                        <span class="completion-stat-value" id="final-ding">0</span>
+                        <span class="completion-stat-label">顶的次数</span>
+                    </div>
+                    <div class="completion-stat">
+                        <span class="completion-stat-value" id="final-wei">0</span>
+                        <span class="completion-stat-label">萎的次数</span>
+                    </div>
+                </div>
+                <button id="restart-btn" class="control-btn glass-btn">再来一次</button>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content glass-card">
+                <p id="modal-text" class="modal-text"></p>
+                <div class="modal-buttons">
+                    <button id="ding-btn" class="modal-btn ding-btn">顶！</button>
+                    <button id="wei-btn" class="modal-btn wei-btn">萎...</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+(function () {
+    'use strict';
+
+    var state = {
+        originalDuration: 0,
+        remainingSeconds: 0,
+        elapsedSeconds: 0,
+        dingCount: 0,
+        weiCount: 0,
+        timerInterval: null,
+        isPaused: false,
+        checkpoints: { third: false, half: false, twoThirds: false }
+    };
+
+    var dom = {
+        setupScreen: document.getElementById('setup-screen'),
+        timerScreen: document.getElementById('timer-screen'),
+        completionScreen: document.getElementById('completion-screen'),
+        modal: document.getElementById('modal'),
+        modalText: document.getElementById('modal-text'),
+        timeDisplay: document.getElementById('time-display'),
+        dingCount: document.getElementById('ding-count'),
+        weiCount: document.getElementById('wei-count'),
+        flower: document.getElementById('flower-svg'),
+        dingBtn: document.getElementById('ding-btn'),
+        weiBtn: document.getElementById('wei-btn'),
+        resetBtn: document.getElementById('reset-btn'),
+        restartBtn: document.getElementById('restart-btn'),
+        finalDuration: document.getElementById('final-duration'),
+        finalDing: document.getElementById('final-ding'),
+        finalWei: document.getElementById('final-wei'),
+        timeBtns: document.querySelectorAll('.time-btn')
+    };
+
+    function init() {
+        dom.timeBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                startTimer(parseInt(this.dataset.minutes, 10));
+            });
+        });
+        dom.dingBtn.addEventListener('click', handleDing);
+        dom.weiBtn.addEventListener('click', handleWei);
+        dom.resetBtn.addEventListener('click', resetToSetup);
+        dom.restartBtn.addEventListener('click', resetToSetup);
+    }
+
+    function startTimer(minutes) {
+        state.originalDuration = minutes * 60;
+        state.remainingSeconds = state.originalDuration;
+        state.elapsedSeconds = 0;
+        state.dingCount = 0;
+        state.weiCount = 0;
+        state.isPaused = false;
+        state.checkpoints = { third: false, half: false, twoThirds: false };
+        showScreen('timer');
+        updateDisplay();
+        updateFlower();
+        dom.timeDisplay.classList.add('running');
+        state.timerInterval = setInterval(tick, 1000);
+    }
+
+    function tick() {
+        if (state.isPaused) return;
+        state.elapsedSeconds++;
+        state.remainingSeconds--;
+        if (state.remainingSeconds <= 0) {
+            state.remainingSeconds = 0;
+            completeTimer();
+            return;
+        }
+        updateDisplay();
+        checkCheckpoints();
+    }
+
+    function checkCheckpoints() {
+        var orig = state.originalDuration;
+        var elapsed = state.elapsedSeconds;
+        var thirdMark = Math.floor(orig / 3);
+        var halfMark = Math.floor(orig / 2);
+        var twoThirdsMark = Math.floor(orig * 2 / 3);
+
+        if (!state.checkpoints.third && elapsed >= thirdMark) {
+            state.checkpoints.third = true;
+            showCheckpointModal(elapsed);
+        } else if (!state.checkpoints.half && elapsed >= halfMark) {
+            state.checkpoints.half = true;
+            showCheckpointModal(elapsed);
+        } else if (!state.checkpoints.twoThirds && elapsed >= twoThirdsMark) {
+            state.checkpoints.twoThirds = true;
+            showCheckpointModal(elapsed);
+        }
+    }
+
+    function showCheckpointModal(elapsedSeconds) {
+        state.isPaused = true;
+        dom.modalText.textContent = '你已经专注' + formatElapsedTime(elapsedSeconds) + '，还顶得住吗？！';
+        dom.modal.classList.remove('hidden');
+        playDingSound();
+    }
+
+    function handleDing() {
+        state.dingCount++;
+        state.remainingSeconds -= 180;
+        if (state.remainingSeconds <= 0) {
+            state.remainingSeconds = 0;
+            closeModal();
+            updateDisplay();
+            completeTimer();
+            return;
+        }
+        closeModal();
+        updateDisplay();
+    }
+
+    function handleWei() {
+        state.weiCount++;
+        if (state.weiCount > 1) {
+            state.remainingSeconds += 300;
+        }
+        closeModal();
+        updateDisplay();
+        updateFlower();
+    }
+
+    function closeModal() {
+        dom.modal.classList.add('hidden');
+        state.isPaused = false;
+    }
+
+    function completeTimer() {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+        dom.timeDisplay.classList.remove('running');
+        playCompletionSound();
+        dom.finalDuration.textContent = Math.round(state.elapsedSeconds / 60);
+        dom.finalDing.textContent = state.dingCount;
+        dom.finalWei.textContent = state.weiCount;
+        showScreen('completion');
+    }
+
+    function resetToSetup() {
+        if (state.timerInterval) {
+            clearInterval(state.timerInterval);
+            state.timerInterval = null;
+        }
+        dom.timeDisplay.classList.remove('running');
+        dom.flower.classList.remove('wilted');
+        showScreen('setup');
+    }
+
+    function showScreen(name) {
+        dom.setupScreen.classList.add('hidden');
+        dom.timerScreen.classList.add('hidden');
+        dom.completionScreen.classList.add('hidden');
+        dom.modal.classList.add('hidden');
+        switch (name) {
+            case 'setup': dom.setupScreen.classList.remove('hidden'); break;
+            case 'timer': dom.timerScreen.classList.remove('hidden'); break;
+            case 'completion': dom.completionScreen.classList.remove('hidden'); break;
+        }
+    }
+
+    function updateDisplay() {
+        dom.timeDisplay.textContent = formatMMSS(state.remainingSeconds);
+        dom.dingCount.textContent = state.dingCount;
+        dom.weiCount.textContent = state.weiCount;
+    }
+
+    function updateFlower() {
+        if (state.weiCount > 1) {
+            dom.flower.classList.add('wilted');
+        } else {
+            dom.flower.classList.remove('wilted');
+        }
+    }
+
+    function formatMMSS(totalSeconds) {
+        var mins = Math.floor(totalSeconds / 60);
+        var secs = totalSeconds % 60;
+        return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    function formatElapsedTime(totalSeconds) {
+        var mins = Math.floor(totalSeconds / 60);
+        var secs = totalSeconds % 60;
+        if (mins === 0) return secs + '秒';
+        if (secs === 0) return mins + '分钟';
+        return mins + '分' + secs + '秒';
+    }
+
+    function playDingSound() {
+        try {
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc1 = audioCtx.createOscillator();
+            var gain1 = audioCtx.createGain();
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            osc1.frequency.value = 880;
+            osc1.type = 'sine';
+            gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            osc1.start(audioCtx.currentTime);
+            osc1.stop(audioCtx.currentTime + 0.4);
+            var osc2 = audioCtx.createOscillator();
+            var gain2 = audioCtx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.frequency.value = 1100;
+            osc2.type = 'sine';
+            gain2.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.25);
+            gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+            osc2.start(audioCtx.currentTime + 0.25);
+            osc2.stop(audioCtx.currentTime + 0.65);
+            setTimeout(function () { audioCtx.close(); }, 1000);
+        } catch (e) {}
+    }
+
+    function playCompletionSound() {
+        try {
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            [523, 659, 784, 1047].forEach(function (freq, i) {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                var t = audioCtx.currentTime + i * 0.15;
+                gain.gain.setValueAtTime(0.25, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.start(t);
+                osc.stop(t + 0.5);
+            });
+            setTimeout(function () { audioCtx.close(); }, 2000);
+        } catch (e) {}
+    }
+
+    init();
+})();
+    </script>
+</body>
+</html>
