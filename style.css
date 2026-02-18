@@ -1,0 +1,549 @@
+/* ============================================
+   DingDing 番茄钟 - 毛玻璃风格样式
+   ============================================ */
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
+}
+
+/* --- Animated Background Blobs --- */
+.bg-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #e94560, #c62a7a);
+    top: -100px;
+    left: -100px;
+    animation: float-1 18s ease-in-out infinite;
+}
+
+.blob-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #533483, #7952b3);
+    bottom: -80px;
+    right: -80px;
+    animation: float-2 22s ease-in-out infinite;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #0f3460, #1687a7);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: float-3 20s ease-in-out infinite;
+}
+
+@keyframes float-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(80px, 60px) scale(1.1); }
+    66% { transform: translate(-40px, 100px) scale(0.95); }
+}
+
+@keyframes float-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-60px, -80px) scale(1.15); }
+    66% { transform: translate(50px, -40px) scale(0.9); }
+}
+
+@keyframes float-3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    33% { transform: translate(-40%, -60%) scale(1.1); }
+    66% { transform: translate(-60%, -40%) scale(0.95); }
+}
+
+/* --- App Container --- */
+.app-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* --- Glass Card Mixin --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* --- Screens --- */
+.screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Setup Screen --- */
+.setup-card {
+    padding: 48px 36px;
+    text-align: center;
+    width: 100%;
+}
+
+.app-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFB3BA, #FFC3A0, #FFE082);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 36px;
+}
+
+.time-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* --- Glass Buttons --- */
+.glass-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.glass-btn:active {
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.time-btn {
+    font-family: inherit;
+}
+
+/* --- Timer Screen --- */
+#timer-screen {
+    justify-content: flex-start;
+    padding-top: 10vh;
+    min-height: 100vh;
+}
+
+/* --- Stats Bar --- */
+.stats-bar {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.stat-item {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-value {
+    font-size: 28px;
+    background: linear-gradient(135deg, #FFE082, #FFB300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.count-value {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Flower Container --- */
+.flower-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 350px;
+    margin-bottom: 24px;
+}
+
+/* --- Flower SVG --- */
+.flower {
+    transition: filter 1.2s ease;
+}
+
+.flower .flower-head {
+    transform-origin: 100px 160px;
+    transition: transform 1.2s ease;
+}
+
+.flower .leaf {
+    transition: transform 1s ease, fill 1.2s ease;
+}
+
+.flower .leaf-vein {
+    transition: stroke 1.2s ease;
+}
+
+.flower .stem {
+    transition: stroke 1.2s ease;
+}
+
+/* Gentle sway animation for blooming flower */
+.flower:not(.wilted) .flower-head {
+    animation: gentle-sway 4s ease-in-out infinite;
+}
+
+@keyframes gentle-sway {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+}
+
+/* --- Wilted State --- */
+.flower.wilted {
+    filter: saturate(0.15) brightness(0.65) sepia(0.5);
+}
+
+.flower.wilted .flower-head {
+    transform: rotate(45deg);
+    animation: none;
+}
+
+.flower.wilted .left-leaf {
+    transform-origin: 100px 215px;
+    transform: rotate(15deg) translateY(8px);
+}
+
+.flower.wilted .right-leaf {
+    transform-origin: 100px 252px;
+    transform: rotate(-15deg) translateY(8px);
+}
+
+/* --- Controls --- */
+.controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+}
+
+.control-btn {
+    font-family: inherit;
+    min-width: 160px;
+}
+
+/* --- Modal --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    animation: modal-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modal-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-text {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: none;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.ding-btn {
+    background: linear-gradient(135deg, #66BB6A, #43A047);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+}
+
+.ding-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(76, 175, 80, 0.4);
+}
+
+.ding-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.wei-btn {
+    background: linear-gradient(135deg, #78909C, #546E7A);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(84, 110, 122, 0.3);
+}
+
+.wei-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(84, 110, 122, 0.4);
+}
+
+.wei-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* --- Completion Screen --- */
+#completion-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.completion-card {
+    padding: 48px 36px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: modal-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.completion-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFE082, #FFB300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.completion-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 32px;
+}
+
+.completion-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.completion-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.completion-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.completion-stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.5px;
+}
+
+/* --- Timer pulse animation --- */
+@keyframes timer-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.time-value.running {
+    animation: timer-pulse 2s ease-in-out infinite;
+}
+
+/* --- Responsive --- */
+@media (max-width: 400px) {
+    .app-container {
+        padding: 12px;
+    }
+
+    .setup-card {
+        padding: 36px 24px;
+    }
+
+    .app-title {
+        font-size: 26px;
+    }
+
+    .stats-bar {
+        gap: 8px;
+    }
+
+    .stat-item {
+        padding: 12px 8px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .time-value {
+        font-size: 22px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .modal-content {
+        padding: 28px 20px;
+    }
+
+    .modal-text {
+        font-size: 17px;
+    }
+
+    .modal-btn {
+        font-size: 18px;
+        padding: 14px 18px;
+    }
+}
+
+@media (max-height: 700px) {
+    #timer-screen {
+        padding-top: 4vh;
+    }
+
+    .flower-container {
+        min-height: 280px;
+    }
+
+    .flower-container svg {
+        width: 180px;
+        height: 280px;
+    }
+}
