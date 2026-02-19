@@ -372,6 +372,7 @@
             day: t.getDate(),
             hour: t.getHours(),
             durationMinutes: state.durationMinutes,
+            elapsedMinutes: Math.round(state.elapsedSeconds / 60),
             name: state.taskName,
             ding: state.dingCount,
             wei: state.weiCount,
@@ -414,16 +415,25 @@
 
         // Render in reverse order (newest first)
         dom.recordsList.innerHTML = records.slice().reverse().map(function (record) {
-            var qt = getQualityText(record);
-            var qc = getQualityClass(record);
             var timeStr = formatRecordTime(record);
             var dur = record.durationMinutes || '?';
+            var text;
+
+            if (!record.completed) {
+                var elapsed = record.elapsedMinutes || '?';
+                text = timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
+                    '然而在' + elapsed + '分钟的时候，你就萎了，你放弃了任务，' +
+                    '做了一次<span class="quality-low">窝囊废</span>';
+            } else {
+                var qt = getQualityText(record);
+                var qc = getQualityClass(record);
+                text = timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
+                    '过程中你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
+                    '你进入了<span class="' + qc + '">' + qt + '</span>的心流';
+            }
+
             return '<div class="record-entry glass-card">' +
-                '<p class="record-text">' +
-                timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
-                '过程中你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
-                '你进入了<span class="' + qc + '">' + qt + '</span>的心流' +
-                '</p>' +
+                '<p class="record-text">' + text + '</p>' +
                 '</div>';
         }).join('');
     }
