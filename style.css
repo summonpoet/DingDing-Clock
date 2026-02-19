@@ -372,6 +372,25 @@ body {
     min-width: 160px;
 }
 
+/* --- Abandon Button --- */
+.abandon-btn {
+    background: rgba(239, 83, 80, 0.08);
+    border-color: rgba(239, 83, 80, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 15px;
+    padding: 14px 24px;
+}
+
+.abandon-btn:hover {
+    background: rgba(239, 83, 80, 0.18);
+    border-color: rgba(239, 83, 80, 0.35);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.abandon-btn:active {
+    background: rgba(239, 83, 80, 0.25);
+}
+
 /* --- Modal --- */
 .modal {
     position: fixed;

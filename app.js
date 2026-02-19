@@ -9,6 +9,7 @@
     var state = {
         taskName: '',              // 任务名称
         originalDuration: 0,       // 原始时长（秒）
+        durationMinutes: 0,        // 原始时长（分钟）
         remainingSeconds: 0,       // 剩余时间（秒）
         elapsedSeconds: 0,         // 实际已过时间（秒）
         dingCount: 0,              // "顶"的次数
@@ -16,6 +17,7 @@
         timerInterval: null,       // 计时器 interval ID
         isPaused: false,           // 弹窗时暂停
         recorded: false,           // 是否已记录
+        startTime: null,           // 开始时间
         checkpoints: {             // 检查点是否已触发
             third: false,
             half: false,
@@ -107,6 +109,25 @@
                 dom.timeBtns[0].focus();
             }
         });
+
+        // Swipe gesture for tab switching
+        var touchStartX = 0;
+        var touchStartY = 0;
+        document.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        document.addEventListener('touchend', function (e) {
+            var dx = e.changedTouches[0].screenX - touchStartX;
+            var dy = e.changedTouches[0].screenY - touchStartY;
+            if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                if (dx < 0) {
+                    switchTab('notebook');
+                } else {
+                    switchTab('focus');
+                }
+            }
+        }, { passive: true });
     }
 
     // --- Tab Switching ---
@@ -130,6 +151,8 @@
         var nameVal = dom.taskNameInput.value.trim();
         state.taskName = nameVal || '专注';
         state.originalDuration = minutes * 60;
+        state.durationMinutes = minutes;
+        state.startTime = new Date();
         state.remainingSeconds = state.originalDuration;
         state.elapsedSeconds = 0;
         state.dingCount = 0;
@@ -341,13 +364,14 @@
     // --- Records / localStorage ---
     function saveRecord(completed) {
         var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
-        var now = new Date();
-        var dateStr = String(now.getFullYear()).slice(2) + '-' +
-                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                      String(now.getDate()).padStart(2, '0');
+        var t = state.startTime || new Date();
 
         records.push({
-            date: dateStr,
+            year: t.getFullYear(),
+            month: t.getMonth() + 1,
+            day: t.getDate(),
+            hour: t.getHours(),
+            durationMinutes: state.durationMinutes,
             name: state.taskName,
             ding: state.dingCount,
             wei: state.weiCount,
@@ -392,14 +416,30 @@
         dom.recordsList.innerHTML = records.slice().reverse().map(function (record) {
             var qt = getQualityText(record);
             var qc = getQualityClass(record);
+            var timeStr = formatRecordTime(record);
+            var dur = record.durationMinutes || '?';
             return '<div class="record-entry glass-card">' +
                 '<p class="record-text">' +
-                '你于"' + record.date + '"把"「' + record.name + '」"当了个事儿办，' +
-                '中间你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
+                timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
+                '过程中你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
                 '你进入了<span class="' + qc + '">' + qt + '</span>的心流' +
                 '</p>' +
                 '</div>';
         }).join('');
+    }
+
+    // --- Format Record Time ---
+    function formatRecordTime(record) {
+        // New format: "2026年下午2点"
+        if (record.year) {
+            var h = record.hour;
+            var period = h < 12 ? '上午' : '下午';
+            var displayHour = h % 12;
+            if (displayHour === 0) displayHour = 12;
+            return record.year + '年' + period + displayHour + '点';
+        }
+        // Backward compat for old records with date field
+        return record.date || '未知时间';
     }
 
     // --- Sound: Ding Ding ---
