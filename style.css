@@ -1,5 +1,5 @@
 /* ============================================
-   DingDing 番茄钟 - 毛玻璃风格样式
+   DingDing 番茄钟 v4.0 - 毛玻璃风格样式
    ============================================ */
 
 /* --- Reset & Base --- */
@@ -16,7 +16,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
     color: #fff;
 }
 
@@ -76,7 +76,7 @@ body {
     66% { transform: translate(-60%, -40%) scale(0.95); }
 }
 
-/* --- App Container --- */
+/* --- App Container (Focus Tab) --- */
 .app-container {
     position: relative;
     z-index: 1;
@@ -88,6 +88,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    padding-bottom: 80px;
 }
 
 /* --- Glass Card Mixin --- */
@@ -143,6 +144,60 @@ body {
     margin-bottom: 36px;
 }
 
+/* Phase 1: CTA Button */
+.start-btn {
+    font-size: 20px;
+    font-weight: 700;
+    padding: 22px 40px;
+    background: linear-gradient(135deg, rgba(255, 179, 186, 0.2), rgba(255, 195, 160, 0.2));
+    border-color: rgba(255, 179, 186, 0.3);
+    font-family: inherit;
+    letter-spacing: 2px;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 179, 186, 0.3), rgba(255, 195, 160, 0.3));
+    border-color: rgba(255, 179, 186, 0.5);
+}
+
+/* Phase 2: Name Input + Time Selection */
+#setup-phase2 {
+    animation: fadeIn 0.4s ease;
+}
+
+#setup-phase2.hidden {
+    display: none;
+}
+
+.task-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 16px 20px;
+    color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s ease;
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.task-input:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.task-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.time-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 16px;
+}
+
 .time-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -184,8 +239,20 @@ body {
 /* --- Timer Screen --- */
 #timer-screen {
     justify-content: flex-start;
-    padding-top: 10vh;
+    padding-top: 8vh;
     min-height: 100vh;
+}
+
+/* --- Timer Task Name --- */
+.timer-task-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* --- Stats Bar --- */
@@ -262,7 +329,6 @@ body {
     transition: stroke 1.2s ease;
 }
 
-/* Gentle sway animation for blooming flower */
 .flower:not(.wilted) .flower-head {
     animation: gentle-sway 4s ease-in-out infinite;
 }
@@ -485,10 +551,149 @@ body {
     animation: timer-pulse 2s ease-in-out infinite;
 }
 
+/* --- Bottom Tab Bar --- */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: rgba(15, 15, 30, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 20px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 80;
+    gap: 8px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.tab-btn:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* --- Notebook Tab --- */
+.notebook-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    overflow-y: auto;
+}
+
+.notebook-container.hidden {
+    display: none;
+}
+
+.notebook-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFB3BA, #FFC3A0, #FFE082);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+
+.notebook-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.record-entry {
+    padding: 18px 20px;
+}
+
+.record-text {
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.quality-high {
+    color: #66BB6A;
+    font-weight: 700;
+}
+
+.quality-mid {
+    color: #FFB300;
+    font-weight: 700;
+}
+
+.quality-low {
+    color: #EF5350;
+    font-weight: 700;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 15px;
+}
+
+.empty-state.hidden {
+    display: none;
+}
+
+.clear-records-btn {
+    display: block;
+    margin: 24px auto 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.clear-records-btn:hover {
+    border-color: rgba(239, 83, 80, 0.4);
+    color: rgba(239, 83, 80, 0.7);
+}
+
+.clear-records-btn.hidden {
+    display: none;
+}
+
 /* --- Responsive --- */
 @media (max-width: 400px) {
     .app-container {
         padding: 12px;
+        padding-bottom: 80px;
     }
 
     .setup-card {
@@ -530,6 +735,11 @@ body {
     .modal-btn {
         font-size: 18px;
         padding: 14px 18px;
+    }
+
+    .start-btn {
+        font-size: 18px;
+        padding: 18px 32px;
     }
 }
 

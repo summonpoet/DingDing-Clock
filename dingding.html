@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DingDing 番茄钟</title>
     <style>
-/* ============================================
-   DingDing 番茄钟 - 毛玻璃风格样式
-   ============================================ */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -21,10 +18,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
     color: #fff;
 }
 
+/* --- Background Blobs --- */
 .bg-blob {
     position: fixed;
     border-radius: 50%;
@@ -33,53 +31,66 @@ body {
     z-index: 0;
     pointer-events: none;
 }
-
 .blob-1 {
-    width: 400px;
-    height: 400px;
+    width: 400px; height: 400px;
     background: radial-gradient(circle, #e94560, #c62a7a);
-    top: -100px;
-    left: -100px;
+    top: -100px; left: -100px;
     animation: float-1 18s ease-in-out infinite;
 }
-
 .blob-2 {
-    width: 350px;
-    height: 350px;
+    width: 350px; height: 350px;
     background: radial-gradient(circle, #533483, #7952b3);
-    bottom: -80px;
-    right: -80px;
+    bottom: -80px; right: -80px;
     animation: float-2 22s ease-in-out infinite;
 }
-
 .blob-3 {
-    width: 300px;
-    height: 300px;
+    width: 300px; height: 300px;
     background: radial-gradient(circle, #0f3460, #1687a7);
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     animation: float-3 20s ease-in-out infinite;
 }
-
 @keyframes float-1 {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(80px, 60px) scale(1.1); }
     66% { transform: translate(-40px, 100px) scale(0.95); }
 }
-
 @keyframes float-2 {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(-60px, -80px) scale(1.15); }
     66% { transform: translate(50px, -40px) scale(0.9); }
 }
-
 @keyframes float-3 {
     0%, 100% { transform: translate(-50%, -50%) scale(1); }
     33% { transform: translate(-40%, -60%) scale(1.1); }
     66% { transform: translate(-60%, -40%) scale(0.95); }
 }
 
+/* --- Glass Card --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* --- Screen Basics --- */
+.screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+}
+.screen.hidden { display: none; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Focus Tab (app-container) --- */
 .app-container {
     position: relative;
     z-index: 1;
@@ -91,42 +102,131 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    padding-bottom: 80px;
 }
 
-.glass-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.screen {
+/* --- Notebook Tab --- */
+.notebook-container {
+    position: relative;
+    z-index: 1;
     width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    overflow-y: auto;
+}
+.notebook-container.hidden { display: none; }
+
+.notebook-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFB3BA, #FFC3A0, #FFE082);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+.notebook-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    margin-bottom: 28px;
+}
+.records-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    animation: fadeIn 0.5s ease;
+    gap: 12px;
+}
+.record-entry {
+    padding: 18px 20px;
+}
+.record-text {
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.8);
+}
+.quality-high {
+    color: #66BB6A;
+    font-weight: 700;
+}
+.quality-mid {
+    color: #FFB300;
+    font-weight: 700;
+}
+.quality-low {
+    color: #EF5350;
+    font-weight: 700;
+}
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 15px;
+}
+.empty-state.hidden { display: none; }
+.clear-records-btn {
+    display: block;
+    margin: 24px auto 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+.clear-records-btn:hover {
+    border-color: rgba(239, 83, 80, 0.4);
+    color: rgba(239, 83, 80, 0.7);
+}
+.clear-records-btn.hidden { display: none; }
+
+/* --- Tab Bar --- */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: rgba(15, 15, 30, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 20px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 80;
+    gap: 8px;
+}
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+.tab-btn:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.55);
 }
 
-.screen.hidden {
-    display: none;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* --- Setup Screen --- */
 .setup-card {
     padding: 48px 36px;
     text-align: center;
     width: 100%;
 }
-
 .app-title {
     font-size: 32px;
     font-weight: 700;
@@ -136,19 +236,65 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .subtitle {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 36px;
 }
 
+/* Phase 1 */
+.start-btn {
+    font-size: 20px;
+    font-weight: 700;
+    padding: 22px 40px;
+    background: linear-gradient(135deg, rgba(255, 179, 186, 0.2), rgba(255, 195, 160, 0.2));
+    border-color: rgba(255, 179, 186, 0.3);
+    font-family: inherit;
+    letter-spacing: 2px;
+}
+.start-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 179, 186, 0.3), rgba(255, 195, 160, 0.3));
+    border-color: rgba(255, 179, 186, 0.5);
+}
+
+/* Phase 2 */
+#setup-phase2 {
+    animation: fadeIn 0.4s ease;
+}
+#setup-phase2.hidden { display: none; }
+
+.task-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 16px 20px;
+    color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s ease;
+    margin-bottom: 28px;
+    text-align: center;
+}
+.task-input:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.task-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+.time-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 16px;
+}
 .time-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
 
+/* --- Glass Buttons --- */
 .glass-btn {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
@@ -163,36 +309,40 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
-
 .glass-btn:hover {
     background: rgba(255, 255, 255, 0.18);
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
-
 .glass-btn:active {
     transform: translateY(0);
     background: rgba(255, 255, 255, 0.22);
 }
+.time-btn { font-family: inherit; }
 
-.time-btn {
-    font-family: inherit;
-}
-
+/* --- Timer Screen --- */
 #timer-screen {
     justify-content: flex-start;
-    padding-top: 10vh;
+    padding-top: 8vh;
     min-height: 100vh;
 }
-
+.timer-task-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
 .stats-bar {
     display: flex;
     gap: 12px;
     width: 100%;
     margin-bottom: 32px;
 }
-
 .stat-item {
     flex: 1;
     padding: 16px 12px;
@@ -201,20 +351,17 @@ body {
     flex-direction: column;
     gap: 6px;
 }
-
 .stat-label {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.5);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
-
 .stat-value {
     font-size: 24px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
-
 .time-value {
     font-size: 28px;
     background: linear-gradient(135deg, #FFE082, #FFB300);
@@ -222,11 +369,9 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+.count-value { color: rgba(255, 255, 255, 0.9); }
 
-.count-value {
-    color: rgba(255, 255, 255, 0.9);
-}
-
+/* --- Flower --- */
 .flower-container {
     display: flex;
     justify-content: center;
@@ -235,97 +380,51 @@ body {
     min-height: 350px;
     margin-bottom: 24px;
 }
-
-.flower {
-    transition: filter 1.2s ease;
-}
-
-.flower .flower-head {
-    transform-origin: 100px 160px;
-    transition: transform 1.2s ease;
-}
-
-.flower .leaf {
-    transition: transform 1s ease, fill 1.2s ease;
-}
-
-.flower .leaf-vein {
-    transition: stroke 1.2s ease;
-}
-
-.flower .stem {
-    transition: stroke 1.2s ease;
-}
-
-.flower:not(.wilted) .flower-head {
-    animation: gentle-sway 4s ease-in-out infinite;
-}
-
+.flower { transition: filter 1.2s ease; }
+.flower .flower-head { transform-origin: 100px 160px; transition: transform 1.2s ease; }
+.flower .leaf { transition: transform 1s ease, fill 1.2s ease; }
+.flower .leaf-vein { transition: stroke 1.2s ease; }
+.flower .stem { transition: stroke 1.2s ease; }
+.flower:not(.wilted) .flower-head { animation: gentle-sway 4s ease-in-out infinite; }
 @keyframes gentle-sway {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(2deg); }
     75% { transform: rotate(-2deg); }
 }
+.flower.wilted { filter: saturate(0.15) brightness(0.65) sepia(0.5); }
+.flower.wilted .flower-head { transform: rotate(45deg); animation: none; }
+.flower.wilted .left-leaf { transform-origin: 100px 215px; transform: rotate(15deg) translateY(8px); }
+.flower.wilted .right-leaf { transform-origin: 100px 252px; transform: rotate(-15deg) translateY(8px); }
 
-.flower.wilted {
-    filter: saturate(0.15) brightness(0.65) sepia(0.5);
-}
-
-.flower.wilted .flower-head {
-    transform: rotate(45deg);
-    animation: none;
-}
-
-.flower.wilted .left-leaf {
-    transform-origin: 100px 215px;
-    transform: rotate(15deg) translateY(8px);
-}
-
-.flower.wilted .right-leaf {
-    transform-origin: 100px 252px;
-    transform: rotate(-15deg) translateY(8px);
-}
-
+/* --- Controls --- */
 .controls {
     width: 100%;
     display: flex;
     justify-content: center;
     padding-bottom: 40px;
 }
+.control-btn { font-family: inherit; min-width: 160px; }
 
-.control-btn {
-    font-family: inherit;
-    min-width: 160px;
-}
-
+/* --- Modal --- */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.3s ease;
 }
-
-.modal.hidden {
-    display: none;
-}
-
+.modal.hidden { display: none; }
 .modal-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
-
 .modal-content {
     position: relative;
     z-index: 1;
@@ -335,18 +434,10 @@ body {
     width: 90%;
     animation: modal-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 @keyframes modal-pop {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 .modal-text {
     font-size: 20px;
     font-weight: 600;
@@ -354,13 +445,11 @@ body {
     margin-bottom: 32px;
     color: rgba(255, 255, 255, 0.95);
 }
-
 .modal-buttons {
     display: flex;
     gap: 16px;
     justify-content: center;
 }
-
 .modal-btn {
     flex: 1;
     padding: 16px 24px;
@@ -372,50 +461,32 @@ body {
     transition: all 0.3s ease;
     font-family: inherit;
 }
-
 .ding-btn {
     background: linear-gradient(135deg, #66BB6A, #43A047);
     color: #fff;
     box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
 }
-
-.ding-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 24px rgba(76, 175, 80, 0.4);
-}
-
-.ding-btn:active {
-    transform: translateY(0) scale(0.98);
-}
-
+.ding-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 24px rgba(76, 175, 80, 0.4); }
+.ding-btn:active { transform: translateY(0) scale(0.98); }
 .wei-btn {
     background: linear-gradient(135deg, #78909C, #546E7A);
     color: #fff;
     box-shadow: 0 4px 16px rgba(84, 110, 122, 0.3);
 }
+.wei-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 24px rgba(84, 110, 122, 0.4); }
+.wei-btn:active { transform: translateY(0) scale(0.98); }
 
-.wei-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 24px rgba(84, 110, 122, 0.4);
-}
-
-.wei-btn:active {
-    transform: translateY(0) scale(0.98);
-}
-
+/* --- Completion Screen --- */
 #completion-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     z-index: 50;
     justify-content: center;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
-
 .completion-card {
     padding: 48px 36px;
     text-align: center;
@@ -423,7 +494,6 @@ body {
     width: 90%;
     animation: modal-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 .completion-title {
     font-size: 32px;
     font-weight: 700;
@@ -433,32 +503,27 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .completion-subtitle {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 32px;
 }
-
 .completion-stats {
     display: flex;
     gap: 16px;
     margin-bottom: 32px;
 }
-
 .completion-stat {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
-
 .completion-stat-value {
     font-size: 28px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.95);
 }
-
 .completion-stat-label {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.45);
@@ -469,13 +534,11 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
 }
+.time-value.running { animation: timer-pulse 2s ease-in-out infinite; }
 
-.time-value.running {
-    animation: timer-pulse 2s ease-in-out infinite;
-}
-
+/* --- Responsive --- */
 @media (max-width: 400px) {
-    .app-container { padding: 12px; }
+    .app-container { padding: 12px; padding-bottom: 80px; }
     .setup-card { padding: 36px 24px; }
     .app-title { font-size: 26px; }
     .stats-bar { gap: 8px; }
@@ -486,8 +549,8 @@ body {
     .modal-content { padding: 28px 20px; }
     .modal-text { font-size: 17px; }
     .modal-btn { font-size: 18px; padding: 14px 18px; }
+    .start-btn { font-size: 18px; padding: 18px 32px; }
 }
-
 @media (max-height: 700px) {
     #timer-screen { padding-top: 4vh; }
     .flower-container { min-height: 280px; }
@@ -496,28 +559,41 @@ body {
     </style>
 </head>
 <body>
-    <!-- Animated background blobs -->
+    <!-- Background blobs -->
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
     <div class="bg-blob blob-3"></div>
 
-    <div class="app-container">
+    <!-- ======== Focus Tab ======== -->
+    <div class="app-container" id="focus-tab">
         <!-- Setup Screen -->
         <div id="setup-screen" class="screen">
             <div class="setup-card glass-card">
                 <h1 class="app-title">DingDing 番茄钟</h1>
-                <p class="subtitle">选择你的专注时间</p>
-                <div class="time-options">
-                    <button class="time-btn glass-btn" data-minutes="15">15 分钟</button>
-                    <button class="time-btn glass-btn" data-minutes="30">30 分钟</button>
-                    <button class="time-btn glass-btn" data-minutes="45">45 分钟</button>
-                    <button class="time-btn glass-btn" data-minutes="60">60 分钟</button>
+
+                <!-- Phase 1: CTA -->
+                <div id="setup-phase1">
+                    <p class="subtitle">准备好了吗？</p>
+                    <button id="start-flow-btn" class="glass-btn start-btn">当个事儿办</button>
+                </div>
+
+                <!-- Phase 2: Name + Time (hidden initially) -->
+                <div id="setup-phase2" class="hidden">
+                    <input type="text" id="task-name-input" class="task-input" placeholder="你要办什么事儿？" maxlength="20">
+                    <p class="time-label">选择专注时间</p>
+                    <div class="time-options">
+                        <button class="time-btn glass-btn" data-minutes="15">15 分钟</button>
+                        <button class="time-btn glass-btn" data-minutes="30">30 分钟</button>
+                        <button class="time-btn glass-btn" data-minutes="45">45 分钟</button>
+                        <button class="time-btn glass-btn" data-minutes="60">60 分钟</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Timer Screen -->
         <div id="timer-screen" class="screen hidden">
+            <div class="timer-task-name" id="timer-task-name"></div>
             <div class="stats-bar">
                 <div class="stat-item glass-card">
                     <span class="stat-label">剩余时间</span>
@@ -549,13 +625,11 @@ body {
                             <stop offset="100%" stop-color="#FFB300"/>
                         </radialGradient>
                     </defs>
-
                     <path class="stem lower-stem" d="M100,160 C100,200 100,250 100,295" stroke="#66BB6A" stroke-width="5" fill="none" stroke-linecap="round"/>
                     <path class="leaf left-leaf" d="M100,215 C78,198 55,205 50,222 C55,232 78,230 100,215Z" fill="#81C784"/>
                     <path class="leaf-vein" d="M98,216 C82,210 65,215 55,224" stroke="#66BB6A" stroke-width="1" fill="none"/>
                     <path class="leaf right-leaf" d="M100,252 C122,235 145,242 150,259 C145,269 122,267 100,252Z" fill="#81C784"/>
                     <path class="leaf-vein" d="M102,253 C118,247 135,252 145,261" stroke="#66BB6A" stroke-width="1" fill="none"/>
-
                     <g class="flower-head">
                         <path class="stem upper-stem" d="M100,105 L100,160" stroke="#66BB6A" stroke-width="5" fill="none" stroke-linecap="round"/>
                         <ellipse class="petal" cx="100" cy="58" rx="16" ry="32" fill="url(#petal-grad-1)" opacity="0.8" transform="rotate(0 100 92)"/>
@@ -609,7 +683,7 @@ body {
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Checkpoint Modal -->
         <div id="modal" class="modal hidden">
             <div class="modal-overlay"></div>
             <div class="modal-content glass-card">
@@ -622,11 +696,28 @@ body {
         </div>
     </div>
 
+    <!-- ======== Notebook Tab ======== -->
+    <div class="notebook-container hidden" id="notebook-tab">
+        <h2 class="notebook-title">顶顶钟记事本</h2>
+        <p class="notebook-subtitle" id="notebook-subtitle"></p>
+        <div id="records-list" class="records-list"></div>
+        <div id="empty-state" class="empty-state">还没有记录，去开始一次专注吧</div>
+        <button id="clear-records-btn" class="clear-records-btn hidden">清空所有记录</button>
+    </div>
+
+    <!-- ======== Bottom Tab Bar ======== -->
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="focus">专注</button>
+        <button class="tab-btn" data-tab="notebook">顶顶钟记事本</button>
+    </div>
+
     <script>
 (function () {
     'use strict';
 
+    // --- State ---
     var state = {
+        taskName: '',
         originalDuration: 0,
         remainingSeconds: 0,
         elapsedSeconds: 0,
@@ -634,15 +725,25 @@ body {
         weiCount: 0,
         timerInterval: null,
         isPaused: false,
+        recorded: false,
         checkpoints: { third: false, half: false, twoThirds: false }
     };
 
+    // --- DOM ---
     var dom = {
+        focusTab: document.getElementById('focus-tab'),
+        notebookTab: document.getElementById('notebook-tab'),
+        tabBtns: document.querySelectorAll('.tab-btn'),
         setupScreen: document.getElementById('setup-screen'),
         timerScreen: document.getElementById('timer-screen'),
         completionScreen: document.getElementById('completion-screen'),
         modal: document.getElementById('modal'),
         modalText: document.getElementById('modal-text'),
+        setupPhase1: document.getElementById('setup-phase1'),
+        setupPhase2: document.getElementById('setup-phase2'),
+        startFlowBtn: document.getElementById('start-flow-btn'),
+        taskNameInput: document.getElementById('task-name-input'),
+        timerTaskName: document.getElementById('timer-task-name'),
         timeDisplay: document.getElementById('time-display'),
         dingCount: document.getElementById('ding-count'),
         weiCount: document.getElementById('wei-count'),
@@ -654,29 +755,96 @@ body {
         finalDuration: document.getElementById('final-duration'),
         finalDing: document.getElementById('final-ding'),
         finalWei: document.getElementById('final-wei'),
-        timeBtns: document.querySelectorAll('.time-btn')
+        timeBtns: document.querySelectorAll('.time-btn'),
+        recordsList: document.getElementById('records-list'),
+        emptyState: document.getElementById('empty-state'),
+        notebookSubtitle: document.getElementById('notebook-subtitle'),
+        clearRecordsBtn: document.getElementById('clear-records-btn')
     };
 
+    // --- Init ---
     function init() {
+        // "当个事儿办" button -> show phase 2
+        dom.startFlowBtn.addEventListener('click', function () {
+            dom.setupPhase1.style.display = 'none';
+            dom.setupPhase2.classList.remove('hidden');
+            dom.taskNameInput.value = '';
+            dom.taskNameInput.focus();
+        });
+
+        // Time selection
         dom.timeBtns.forEach(function (btn) {
             btn.addEventListener('click', function () {
                 startTimer(parseInt(this.dataset.minutes, 10));
             });
         });
+
+        // Checkpoint modal buttons
         dom.dingBtn.addEventListener('click', handleDing);
         dom.weiBtn.addEventListener('click', handleWei);
-        dom.resetBtn.addEventListener('click', resetToSetup);
-        dom.restartBtn.addEventListener('click', resetToSetup);
+
+        // Reset / Restart
+        dom.resetBtn.addEventListener('click', function () {
+            resetToSetup(false);
+        });
+        dom.restartBtn.addEventListener('click', function () {
+            resetToSetup(true);
+        });
+
+        // Tab switching
+        dom.tabBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Clear records
+        dom.clearRecordsBtn.addEventListener('click', function () {
+            if (confirm('确定要清空所有记录吗？')) {
+                localStorage.removeItem('dingding-records');
+                renderNotebook();
+            }
+        });
+
+        // Enter key in name input -> focus first time button
+        dom.taskNameInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dom.timeBtns[0].focus();
+            }
+        });
     }
 
+    // --- Tab Switching ---
+    function switchTab(tab) {
+        dom.tabBtns.forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+
+        if (tab === 'focus') {
+            dom.focusTab.style.display = '';
+            dom.notebookTab.classList.add('hidden');
+        } else {
+            dom.focusTab.style.display = 'none';
+            dom.notebookTab.classList.remove('hidden');
+            renderNotebook();
+        }
+    }
+
+    // --- Start Timer ---
     function startTimer(minutes) {
+        var nameVal = dom.taskNameInput.value.trim();
+        state.taskName = nameVal || '专注';
         state.originalDuration = minutes * 60;
         state.remainingSeconds = state.originalDuration;
         state.elapsedSeconds = 0;
         state.dingCount = 0;
         state.weiCount = 0;
         state.isPaused = false;
+        state.recorded = false;
         state.checkpoints = { third: false, half: false, twoThirds: false };
+
+        dom.timerTaskName.textContent = state.taskName;
         showScreen('timer');
         updateDisplay();
         updateFlower();
@@ -684,10 +852,12 @@ body {
         state.timerInterval = setInterval(tick, 1000);
     }
 
+    // --- Tick ---
     function tick() {
         if (state.isPaused) return;
         state.elapsedSeconds++;
         state.remainingSeconds--;
+
         if (state.remainingSeconds <= 0) {
             state.remainingSeconds = 0;
             completeTimer();
@@ -697,6 +867,7 @@ body {
         checkCheckpoints();
     }
 
+    // --- Checkpoints ---
     function checkCheckpoints() {
         var orig = state.originalDuration;
         var elapsed = state.elapsedSeconds;
@@ -723,6 +894,7 @@ body {
         playDingSound();
     }
 
+    // --- Ding ---
     function handleDing() {
         state.dingCount++;
         state.remainingSeconds -= 180;
@@ -737,6 +909,7 @@ body {
         updateDisplay();
     }
 
+    // --- Wei ---
     function handleWei() {
         state.weiCount++;
         if (state.weiCount > 1) {
@@ -752,32 +925,54 @@ body {
         state.isPaused = false;
     }
 
+    // --- Complete ---
     function completeTimer() {
         clearInterval(state.timerInterval);
         state.timerInterval = null;
         dom.timeDisplay.classList.remove('running');
         playCompletionSound();
+
+        // Save record
+        if (!state.recorded) {
+            saveRecord(true);
+            state.recorded = true;
+        }
+
         dom.finalDuration.textContent = Math.round(state.elapsedSeconds / 60);
         dom.finalDing.textContent = state.dingCount;
         dom.finalWei.textContent = state.weiCount;
         showScreen('completion');
     }
 
-    function resetToSetup() {
+    // --- Reset ---
+    function resetToSetup(fromCompletion) {
+        // Save incomplete record if timer was running
+        if (!fromCompletion && state.timerInterval && state.elapsedSeconds > 10 && !state.recorded) {
+            saveRecord(false);
+            state.recorded = true;
+        }
+
         if (state.timerInterval) {
             clearInterval(state.timerInterval);
             state.timerInterval = null;
         }
         dom.timeDisplay.classList.remove('running');
         dom.flower.classList.remove('wilted');
+
+        // Reset setup to phase 1
+        dom.setupPhase1.style.display = '';
+        dom.setupPhase2.classList.add('hidden');
+
         showScreen('setup');
     }
 
+    // --- Show Screen ---
     function showScreen(name) {
         dom.setupScreen.classList.add('hidden');
         dom.timerScreen.classList.add('hidden');
         dom.completionScreen.classList.add('hidden');
         dom.modal.classList.add('hidden');
+
         switch (name) {
             case 'setup': dom.setupScreen.classList.remove('hidden'); break;
             case 'timer': dom.timerScreen.classList.remove('hidden'); break;
@@ -785,6 +980,7 @@ body {
         }
     }
 
+    // --- Update Display ---
     function updateDisplay() {
         dom.timeDisplay.textContent = formatMMSS(state.remainingSeconds);
         dom.dingCount.textContent = state.dingCount;
@@ -799,6 +995,7 @@ body {
         }
     }
 
+    // --- Format ---
     function formatMMSS(totalSeconds) {
         var mins = Math.floor(totalSeconds / 60);
         var secs = totalSeconds % 60;
@@ -813,53 +1010,107 @@ body {
         return mins + '分' + secs + '秒';
     }
 
+    // --- Records / localStorage ---
+    function saveRecord(completed) {
+        var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
+        var now = new Date();
+        var dateStr = String(now.getFullYear()).slice(2) + '-' +
+                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(now.getDate()).padStart(2, '0');
+
+        records.push({
+            date: dateStr,
+            name: state.taskName,
+            ding: state.dingCount,
+            wei: state.weiCount,
+            completed: completed
+        });
+
+        localStorage.setItem('dingding-records', JSON.stringify(records));
+    }
+
+    function getQualityText(record) {
+        if (!record.completed) return '拉完了';
+        var diff = record.ding - record.wei;
+        if (diff > 0) return '夯得一批';
+        if (diff === 0) return '平庸的';
+        return '拉完了';
+    }
+
+    function getQualityClass(record) {
+        if (!record.completed) return 'quality-low';
+        var diff = record.ding - record.wei;
+        if (diff > 0) return 'quality-high';
+        if (diff === 0) return 'quality-mid';
+        return 'quality-low';
+    }
+
+    function renderNotebook() {
+        var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
+
+        if (records.length === 0) {
+            dom.recordsList.innerHTML = '';
+            dom.emptyState.classList.remove('hidden');
+            dom.clearRecordsBtn.classList.add('hidden');
+            dom.notebookSubtitle.textContent = '';
+            return;
+        }
+
+        dom.emptyState.classList.add('hidden');
+        dom.clearRecordsBtn.classList.remove('hidden');
+        dom.notebookSubtitle.textContent = '共 ' + records.length + ' 条记录';
+
+        dom.recordsList.innerHTML = records.slice().reverse().map(function (record) {
+            var qt = getQualityText(record);
+            var qc = getQualityClass(record);
+            return '<div class="record-entry glass-card">' +
+                '<p class="record-text">' +
+                '你于"' + record.date + '"把"「' + record.name + '」"当了个事儿办，' +
+                '中间你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
+                '你进入了<span class="' + qc + '">' + qt + '</span>的心流' +
+                '</p>' +
+                '</div>';
+        }).join('');
+    }
+
+    // --- Sounds ---
     function playDingSound() {
         try {
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc1 = audioCtx.createOscillator();
-            var gain1 = audioCtx.createGain();
-            osc1.connect(gain1);
-            gain1.connect(audioCtx.destination);
-            osc1.frequency.value = 880;
-            osc1.type = 'sine';
-            gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-            osc1.start(audioCtx.currentTime);
-            osc1.stop(audioCtx.currentTime + 0.4);
-            var osc2 = audioCtx.createOscillator();
-            var gain2 = audioCtx.createGain();
-            osc2.connect(gain2);
-            gain2.connect(audioCtx.destination);
-            osc2.frequency.value = 1100;
-            osc2.type = 'sine';
-            gain2.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.25);
-            gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
-            osc2.start(audioCtx.currentTime + 0.25);
-            osc2.stop(audioCtx.currentTime + 0.65);
-            setTimeout(function () { audioCtx.close(); }, 1000);
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var o1 = ctx.createOscillator(), g1 = ctx.createGain();
+            o1.connect(g1); g1.connect(ctx.destination);
+            o1.frequency.value = 880; o1.type = 'sine';
+            g1.gain.setValueAtTime(0.3, ctx.currentTime);
+            g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+            o1.start(ctx.currentTime); o1.stop(ctx.currentTime + 0.4);
+
+            var o2 = ctx.createOscillator(), g2 = ctx.createGain();
+            o2.connect(g2); g2.connect(ctx.destination);
+            o2.frequency.value = 1100; o2.type = 'sine';
+            g2.gain.setValueAtTime(0.3, ctx.currentTime + 0.25);
+            g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.65);
+            o2.start(ctx.currentTime + 0.25); o2.stop(ctx.currentTime + 0.65);
+            setTimeout(function () { ctx.close(); }, 1000);
         } catch (e) {}
     }
 
     function playCompletionSound() {
         try {
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
             [523, 659, 784, 1047].forEach(function (freq, i) {
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                var t = audioCtx.currentTime + i * 0.15;
-                gain.gain.setValueAtTime(0.25, t);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-                osc.start(t);
-                osc.stop(t + 0.5);
+                var o = ctx.createOscillator(), g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = freq; o.type = 'sine';
+                var t = ctx.currentTime + i * 0.15;
+                g.gain.setValueAtTime(0.25, t);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                o.start(t); o.stop(t + 0.5);
             });
-            setTimeout(function () { audioCtx.close(); }, 2000);
+            setTimeout(function () { ctx.close(); }, 2000);
         } catch (e) {}
     }
 
+    // --- Boot ---
     init();
 })();
     </script>

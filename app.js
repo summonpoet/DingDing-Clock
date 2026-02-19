@@ -1,20 +1,22 @@
 /* ============================================
-   DingDing 番茄钟 - 应用逻辑
+   DingDing 番茄钟 v4.0 - 应用逻辑
    ============================================ */
 
 (function () {
     'use strict';
 
     // --- State ---
-    const state = {
-        originalDuration: 0,   // 原始时长（秒）
-        remainingSeconds: 0,   // 剩余时间（秒）
-        elapsedSeconds: 0,     // 实际已过时间（秒）
-        dingCount: 0,          // "顶"的次数
-        weiCount: 0,           // "萎"的次数
-        timerInterval: null,   // 计时器 interval ID
-        isPaused: false,       // 弹窗时暂停
-        checkpoints: {         // 检查点是否已触发
+    var state = {
+        taskName: '',              // 任务名称
+        originalDuration: 0,       // 原始时长（秒）
+        remainingSeconds: 0,       // 剩余时间（秒）
+        elapsedSeconds: 0,         // 实际已过时间（秒）
+        dingCount: 0,              // "顶"的次数
+        weiCount: 0,               // "萎"的次数
+        timerInterval: null,       // 计时器 interval ID
+        isPaused: false,           // 弹窗时暂停
+        recorded: false,           // 是否已记录
+        checkpoints: {             // 检查点是否已触发
             third: false,
             half: false,
             twoThirds: false
@@ -22,12 +24,20 @@
     };
 
     // --- DOM Elements ---
-    const dom = {
+    var dom = {
+        focusTab: document.getElementById('focus-tab'),
+        notebookTab: document.getElementById('notebook-tab'),
+        tabBtns: document.querySelectorAll('.tab-btn'),
         setupScreen: document.getElementById('setup-screen'),
         timerScreen: document.getElementById('timer-screen'),
         completionScreen: document.getElementById('completion-screen'),
         modal: document.getElementById('modal'),
         modalText: document.getElementById('modal-text'),
+        setupPhase1: document.getElementById('setup-phase1'),
+        setupPhase2: document.getElementById('setup-phase2'),
+        startFlowBtn: document.getElementById('start-flow-btn'),
+        taskNameInput: document.getElementById('task-name-input'),
+        timerTaskName: document.getElementById('timer-task-name'),
         timeDisplay: document.getElementById('time-display'),
         dingCount: document.getElementById('ding-count'),
         weiCount: document.getElementById('wei-count'),
@@ -39,37 +49,97 @@
         finalDuration: document.getElementById('final-duration'),
         finalDing: document.getElementById('final-ding'),
         finalWei: document.getElementById('final-wei'),
-        timeBtns: document.querySelectorAll('.time-btn')
+        timeBtns: document.querySelectorAll('.time-btn'),
+        recordsList: document.getElementById('records-list'),
+        emptyState: document.getElementById('empty-state'),
+        notebookSubtitle: document.getElementById('notebook-subtitle'),
+        clearRecordsBtn: document.getElementById('clear-records-btn')
     };
 
     // --- Initialization ---
     function init() {
+        // "当个事儿办" button -> show phase 2
+        dom.startFlowBtn.addEventListener('click', function () {
+            dom.setupPhase1.style.display = 'none';
+            dom.setupPhase2.classList.remove('hidden');
+            dom.taskNameInput.value = '';
+            dom.taskNameInput.focus();
+        });
+
         // Time selection buttons
         dom.timeBtns.forEach(function (btn) {
             btn.addEventListener('click', function () {
-                var minutes = parseInt(this.dataset.minutes, 10);
-                startTimer(minutes);
+                startTimer(parseInt(this.dataset.minutes, 10));
             });
         });
 
-        // Modal buttons
+        // Checkpoint modal buttons
         dom.dingBtn.addEventListener('click', handleDing);
         dom.weiBtn.addEventListener('click', handleWei);
 
         // Reset / Restart buttons
-        dom.resetBtn.addEventListener('click', resetToSetup);
-        dom.restartBtn.addEventListener('click', resetToSetup);
+        dom.resetBtn.addEventListener('click', function () {
+            resetToSetup(false);
+        });
+        dom.restartBtn.addEventListener('click', function () {
+            resetToSetup(true);
+        });
+
+        // Tab switching
+        dom.tabBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Clear records
+        dom.clearRecordsBtn.addEventListener('click', function () {
+            if (confirm('确定要清空所有记录吗？')) {
+                localStorage.removeItem('dingding-records');
+                renderNotebook();
+            }
+        });
+
+        // Enter key in name input
+        dom.taskNameInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dom.timeBtns[0].focus();
+            }
+        });
+    }
+
+    // --- Tab Switching ---
+    function switchTab(tab) {
+        dom.tabBtns.forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+
+        if (tab === 'focus') {
+            dom.focusTab.style.display = '';
+            dom.notebookTab.classList.add('hidden');
+        } else {
+            dom.focusTab.style.display = 'none';
+            dom.notebookTab.classList.remove('hidden');
+            renderNotebook();
+        }
     }
 
     // --- Start Timer ---
     function startTimer(minutes) {
+        var nameVal = dom.taskNameInput.value.trim();
+        state.taskName = nameVal || '专注';
         state.originalDuration = minutes * 60;
         state.remainingSeconds = state.originalDuration;
         state.elapsedSeconds = 0;
         state.dingCount = 0;
         state.weiCount = 0;
         state.isPaused = false;
+        state.recorded = false;
         state.checkpoints = { third: false, half: false, twoThirds: false };
+
+        // Show task name on timer screen
+        dom.timerTaskName.textContent = state.taskName;
 
         // Switch screens
         showScreen('timer');
@@ -179,6 +249,12 @@
         // Play completion sound
         playCompletionSound();
 
+        // Save record
+        if (!state.recorded) {
+            saveRecord(true);
+            state.recorded = true;
+        }
+
         // Show completion screen
         var totalMinutes = Math.round(state.elapsedSeconds / 60);
         dom.finalDuration.textContent = totalMinutes;
@@ -189,13 +265,24 @@
     }
 
     // --- Reset to Setup ---
-    function resetToSetup() {
+    function resetToSetup(fromCompletion) {
+        // Save incomplete record if timer was running
+        if (!fromCompletion && state.timerInterval && state.elapsedSeconds > 10 && !state.recorded) {
+            saveRecord(false);
+            state.recorded = true;
+        }
+
         if (state.timerInterval) {
             clearInterval(state.timerInterval);
             state.timerInterval = null;
         }
         dom.timeDisplay.classList.remove('running');
         dom.flower.classList.remove('wilted');
+
+        // Reset setup to phase 1
+        dom.setupPhase1.style.display = '';
+        dom.setupPhase2.classList.add('hidden');
+
         showScreen('setup');
     }
 
@@ -249,6 +336,70 @@
         if (mins === 0) return secs + '秒';
         if (secs === 0) return mins + '分钟';
         return mins + '分' + secs + '秒';
+    }
+
+    // --- Records / localStorage ---
+    function saveRecord(completed) {
+        var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
+        var now = new Date();
+        var dateStr = String(now.getFullYear()).slice(2) + '-' +
+                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(now.getDate()).padStart(2, '0');
+
+        records.push({
+            date: dateStr,
+            name: state.taskName,
+            ding: state.dingCount,
+            wei: state.weiCount,
+            completed: completed
+        });
+
+        localStorage.setItem('dingding-records', JSON.stringify(records));
+    }
+
+    function getQualityText(record) {
+        if (!record.completed) return '拉完了';
+        var diff = record.ding - record.wei;
+        if (diff > 0) return '夯得一批';
+        if (diff === 0) return '平庸的';
+        return '拉完了';
+    }
+
+    function getQualityClass(record) {
+        if (!record.completed) return 'quality-low';
+        var diff = record.ding - record.wei;
+        if (diff > 0) return 'quality-high';
+        if (diff === 0) return 'quality-mid';
+        return 'quality-low';
+    }
+
+    function renderNotebook() {
+        var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
+
+        if (records.length === 0) {
+            dom.recordsList.innerHTML = '';
+            dom.emptyState.classList.remove('hidden');
+            dom.clearRecordsBtn.classList.add('hidden');
+            dom.notebookSubtitle.textContent = '';
+            return;
+        }
+
+        dom.emptyState.classList.add('hidden');
+        dom.clearRecordsBtn.classList.remove('hidden');
+        dom.notebookSubtitle.textContent = '共 ' + records.length + ' 条记录';
+
+        // Render in reverse order (newest first)
+        dom.recordsList.innerHTML = records.slice().reverse().map(function (record) {
+            var qt = getQualityText(record);
+            var qc = getQualityClass(record);
+            return '<div class="record-entry glass-card">' +
+                '<p class="record-text">' +
+                '你于"' + record.date + '"把"「' + record.name + '」"当了个事儿办，' +
+                '中间你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
+                '你进入了<span class="' + qc + '">' + qt + '</span>的心流' +
+                '</p>' +
+                '</div>';
+        }).join('');
     }
 
     // --- Sound: Ding Ding ---
