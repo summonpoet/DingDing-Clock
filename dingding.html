@@ -573,6 +573,266 @@ body {
     .flower-container { min-height: 280px; }
     .flower-container svg { width: 180px; height: 280px; }
 }
+
+/* ============================================
+   Garden System - Pixel Art Style
+   ============================================ */
+
+/* --- Pixel Font Rendering --- */
+.garden-container *, .garden-toast {
+    image-rendering: pixelated;
+}
+
+/* --- Garden Container --- */
+.garden-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+    overflow-y: auto;
+}
+.garden-container.hidden { display: none; }
+
+.garden-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #FFE082, #81C784, #FFB300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    letter-spacing: 2px;
+}
+.garden-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.35);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* --- Garden Sections --- */
+.garden-section {
+    margin-bottom: 20px;
+}
+.garden-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+.garden-section-icon {
+    font-size: 18px;
+}
+.garden-section-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 1px;
+}
+.garden-section-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Grid (shared for garden & storage) --- */
+.garden-grid, .storage-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+/* --- Pixel Slot --- */
+.pixel-slot {
+    aspect-ratio: 1;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    padding: 2px;
+}
+.pixel-slot:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+.pixel-slot.selected {
+    border-color: rgba(255, 224, 130, 0.6);
+    background: rgba(255, 224, 130, 0.1);
+    box-shadow: 0 0 12px rgba(255, 224, 130, 0.15);
+}
+.pixel-slot.empty {
+    cursor: default;
+    opacity: 0.5;
+}
+.pixel-slot.empty:hover {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Garden soil plot */
+.garden-grid .pixel-slot {
+    background: rgba(101, 67, 33, 0.25);
+    border-color: rgba(139, 90, 43, 0.3);
+}
+.garden-grid .pixel-slot:hover {
+    background: rgba(101, 67, 33, 0.35);
+    border-color: rgba(139, 90, 43, 0.5);
+}
+.garden-grid .pixel-slot.selected {
+    border-color: rgba(255, 224, 130, 0.6);
+    background: rgba(101, 67, 33, 0.35);
+}
+.garden-grid .pixel-slot.watered {
+    background: rgba(60, 80, 50, 0.35);
+    border-color: rgba(100, 180, 100, 0.25);
+}
+
+/* --- Pixel Sprite (the item image) --- */
+.pixel-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* --- Item Count Badge --- */
+.item-count-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 0px 4px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 16px;
+}
+
+/* --- Item Name Label --- */
+.item-name-label {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 1px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    line-height: 1.2;
+}
+
+/* --- Watered indicator --- */
+.watered-indicator {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 10px;
+    line-height: 1;
+}
+
+/* --- Garden Action Info Panel --- */
+.garden-actions {
+    min-height: 60px;
+}
+.garden-action-info {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.garden-action-info.hidden { display: none; }
+
+.garden-action-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 4px;
+}
+.garden-action-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.garden-action-btns {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.garden-act-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.garden-act-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.garden-act-btn.primary {
+    background: rgba(102, 187, 106, 0.25);
+    border-color: rgba(102, 187, 106, 0.4);
+}
+.garden-act-btn.primary:hover {
+    background: rgba(102, 187, 106, 0.4);
+}
+.garden-act-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* --- Toast Notification --- */
+.garden-toast {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 50, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    z-index: 200;
+    animation: toast-in 0.35s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    white-space: nowrap;
+}
+.garden-toast.hidden { display: none; }
+@keyframes toast-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* --- Pixel Art Sprites via CSS (inline SVG data URIs) --- */
+/* These are generated as small pixel-art-style inline SVGs */
+
     </style>
 </head>
 <body>
@@ -722,10 +982,45 @@ body {
         <button id="clear-records-btn" class="clear-records-btn hidden">清空所有记录</button>
     </div>
 
+    <!-- ======== Garden Tab ======== -->
+    <div class="garden-container hidden" id="garden-tab">
+        <h2 class="garden-title">甜甜花园</h2>
+        <p class="garden-subtitle" id="garden-subtitle">种下甜甜花，用心浇灌它</p>
+
+        <!-- Notification Toast -->
+        <div id="garden-toast" class="garden-toast hidden"></div>
+
+        <!-- Garden Area (10 plots) -->
+        <div class="garden-section">
+            <div class="garden-section-header">
+                <span class="garden-section-icon">&#x1F33B;</span>
+                <span class="garden-section-label">花园</span>
+                <span class="garden-section-count" id="garden-count">0 / 10</span>
+            </div>
+            <div class="garden-grid" id="garden-grid"></div>
+        </div>
+
+        <!-- Storage Bag (10 slots) -->
+        <div class="garden-section">
+            <div class="garden-section-header">
+                <span class="garden-section-icon">&#x1F392;</span>
+                <span class="garden-section-label">储物袋</span>
+                <span class="garden-section-count" id="storage-count">0 / 25</span>
+            </div>
+            <div class="storage-grid" id="storage-grid"></div>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="garden-actions" id="garden-actions">
+            <div id="garden-action-info" class="garden-action-info hidden"></div>
+        </div>
+    </div>
+
     <!-- ======== Bottom Tab Bar ======== -->
     <div class="tab-bar">
         <button class="tab-btn active" data-tab="focus">专注</button>
-        <button class="tab-btn" data-tab="notebook">顶顶钟记事本</button>
+        <button class="tab-btn" data-tab="garden">甜甜花园</button>
+        <button class="tab-btn" data-tab="notebook">记事本</button>
     </div>
 
     <script>
@@ -778,7 +1073,15 @@ body {
         recordsList: document.getElementById('records-list'),
         emptyState: document.getElementById('empty-state'),
         notebookSubtitle: document.getElementById('notebook-subtitle'),
-        clearRecordsBtn: document.getElementById('clear-records-btn')
+        clearRecordsBtn: document.getElementById('clear-records-btn'),
+        // Garden
+        gardenTab: document.getElementById('garden-tab'),
+        gardenGrid: document.getElementById('garden-grid'),
+        storageGrid: document.getElementById('storage-grid'),
+        gardenCount: document.getElementById('garden-count'),
+        storageCount: document.getElementById('storage-count'),
+        gardenActionInfo: document.getElementById('garden-action-info'),
+        gardenToast: document.getElementById('garden-toast')
     };
 
     // --- Init ---
@@ -840,14 +1143,18 @@ body {
             touchStartX = e.changedTouches[0].screenX;
             touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
+        var tabOrder = ['focus', 'garden', 'notebook'];
         document.addEventListener('touchend', function (e) {
             var dx = e.changedTouches[0].screenX - touchStartX;
             var dy = e.changedTouches[0].screenY - touchStartY;
             if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-                if (dx < 0) {
-                    switchTab('notebook');
-                } else {
-                    switchTab('focus');
+                var current = 'focus';
+                dom.tabBtns.forEach(function (btn) { if (btn.classList.contains('active')) current = btn.dataset.tab; });
+                var idx = tabOrder.indexOf(current);
+                if (dx < 0 && idx < tabOrder.length - 1) {
+                    switchTab(tabOrder[idx + 1]);
+                } else if (dx > 0 && idx > 0) {
+                    switchTab(tabOrder[idx - 1]);
                 }
             }
         }, { passive: true });
@@ -859,11 +1166,17 @@ body {
             btn.classList.toggle('active', btn.dataset.tab === tab);
         });
 
+        dom.focusTab.style.display = 'none';
+        dom.notebookTab.classList.add('hidden');
+        dom.gardenTab.classList.add('hidden');
+
         if (tab === 'focus') {
             dom.focusTab.style.display = '';
-            dom.notebookTab.classList.add('hidden');
+        } else if (tab === 'garden') {
+            dom.gardenTab.classList.remove('hidden');
+            Garden.checkGrowth();
+            Garden.render();
         } else {
-            dom.focusTab.style.display = 'none';
             dom.notebookTab.classList.remove('hidden');
             renderNotebook();
         }
@@ -937,6 +1250,8 @@ body {
     // --- Ding ---
     function handleDing() {
         state.dingCount++;
+        // Drop: each "顶" gives 1 顶顶球
+        Garden.addItem('dingding_ball', 1);
         state.remainingSeconds -= 180;
         if (state.remainingSeconds <= 0) {
             state.remainingSeconds = 0;
@@ -976,6 +1291,9 @@ body {
         if (!state.recorded) {
             saveRecord(true);
             state.recorded = true;
+            // Drop: completed task gives 1 甜甜花苗 + 2 小水滴
+            Garden.addItem('sweet_seedling', 1);
+            Garden.addItem('water_drop', 2);
         }
 
         dom.finalDuration.textContent = Math.round(state.elapsedSeconds / 60);
@@ -990,6 +1308,8 @@ body {
         if (!fromCompletion && state.timerInterval && state.elapsedSeconds > 10 && !state.recorded) {
             saveRecord(false);
             state.recorded = true;
+            // Drop: failed task gives 1 枯萎的甜甜花
+            Garden.addItem('wilted_flower', 1);
         }
 
         if (state.timerInterval) {
@@ -1175,6 +1495,481 @@ body {
             setTimeout(function () { ctx.close(); }, 2000);
         } catch (e) {}
     }
+
+    // ============================================
+    // Garden System Module
+    // ============================================
+    var Garden = (function () {
+        var STORAGE_KEY = 'dingding-garden';
+        var MAX_STORAGE = 25;
+        var GARDEN_SLOTS = 10;
+        var STORAGE_SLOTS = 10;
+
+        // Item definitions
+        var ITEMS = {
+            sweet_seedling: { name: '甜甜花苗', desc: '完成任务获得的小花苗', stage: 0, plantable: true },
+            water_drop: { name: '小水滴', desc: '用来浇灌甜甜花' },
+            dingding_ball: { name: '顶顶球', desc: '蓝色珍珠，可加速花的生长' },
+            wilted_flower: { name: '枯萎的甜甜花', desc: '失败任务的纪念...' },
+            flower_stage1: { name: '微弱的甜甜花', desc: '刚刚发芽的小花', stage: 1 },
+            flower_stage2: { name: '有一点甜的甜甜花', desc: '在慢慢成长', stage: 2 },
+            flower_stage3: { name: '中流砥柱的甜甜花', desc: '坚强的花朵', stage: 3 },
+            flower_king: { name: '甜甜大王花', desc: '传说中的大王花！', stage: 4 },
+            golden_hamster: { name: '黄金仓鼠', desc: '甜甜花园的终极奖励！', stage: 5 }
+        };
+
+        // Growth path: stage index -> item type
+        var GROWTH_PATH = ['sweet_seedling', 'flower_stage1', 'flower_stage2', 'flower_stage3', 'flower_king', 'golden_hamster'];
+
+        // Pixel art SVG sprites for each item
+        var SPRITES = {};
+        SPRITES.sweet_seedling = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="10" width="2" height="4" fill="#4a7c3f"/><rect x="6" y="8" width="4" height="3" fill="#6abf4b"/><rect x="7" y="6" width="2" height="3" fill="#a8e06c"/><rect x="6" y="5" width="4" height="2" fill="#ffe066"/><rect x="7" y="4" width="2" height="2" fill="#ffd700"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/></svg>';
+
+        SPRITES.water_drop = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="3" width="2" height="2" fill="#87CEEB"/><rect x="6" y="5" width="4" height="2" fill="#5bb8f5"/><rect x="5" y="7" width="6" height="3" fill="#4a9eea"/><rect x="6" y="10" width="4" height="2" fill="#3a8ed9"/><rect x="7" y="12" width="2" height="1" fill="#2a7ec9"/><rect x="7" y="5" width="1" height="1" fill="#b3e0ff" opacity="0.8"/></svg>';
+
+        SPRITES.dingding_ball = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="6" y="4" width="4" height="1" fill="#5b8dd9"/><rect x="5" y="5" width="6" height="1" fill="#4a7dcf"/><rect x="4" y="6" width="8" height="4" fill="#3a6dbf"/><rect x="5" y="10" width="6" height="1" fill="#4a7dcf"/><rect x="6" y="11" width="4" height="1" fill="#5b8dd9"/><rect x="6" y="5" width="2" height="2" fill="#8bb8ff" opacity="0.7"/><rect x="5" y="7" width="1" height="1" fill="#a0ccff" opacity="0.4"/></svg>';
+
+        SPRITES.wilted_flower = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="9" width="2" height="5" fill="#5a5a3a"/><path d="M8,9 L6,7 L8,5 L10,7 Z" fill="#8a7a3a"/><rect x="7" y="4" width="2" height="2" fill="#9a8a4a" opacity="0.6"/><rect x="6" y="6" width="4" height="2" fill="#7a6a2a" opacity="0.7"/><rect x="9" y="10" width="3" height="1" fill="#5a5a3a" opacity="0.5"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/></svg>';
+
+        SPRITES.flower_stage1 = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="9" width="2" height="5" fill="#4a7c3f"/><rect x="5" y="10" width="3" height="2" fill="#6abf4b"/><rect x="6" y="6" width="4" height="4" fill="#8cd96c"/><rect x="7" y="5" width="2" height="2" fill="#ffe066"/><rect x="6" y="4" width="4" height="2" fill="#ffd54f"/><rect x="7" y="3" width="2" height="2" fill="#ffca28"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/></svg>';
+
+        SPRITES.flower_stage2 = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="8" width="2" height="6" fill="#4a7c3f"/><rect x="4" y="10" width="3" height="2" fill="#6abf4b"/><rect x="10" y="9" width="2" height="2" fill="#6abf4b"/><rect x="5" y="5" width="6" height="4" fill="#a8e06c"/><rect x="6" y="4" width="4" height="2" fill="#ffe082"/><rect x="5" y="3" width="6" height="2" fill="#ffd54f"/><rect x="7" y="2" width="2" height="2" fill="#ffca28"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/></svg>';
+
+        SPRITES.flower_stage3 = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="8" width="2" height="6" fill="#3d6b35"/><rect x="4" y="10" width="3" height="2" fill="#5aad40"/><rect x="10" y="9" width="3" height="2" fill="#5aad40"/><rect x="4" y="4" width="8" height="5" fill="#8cd96c"/><rect x="5" y="3" width="6" height="2" fill="#ffe082"/><rect x="4" y="2" width="8" height="2" fill="#ffd54f"/><rect x="6" y="1" width="4" height="2" fill="#ffca28"/><rect x="7" y="0" width="2" height="2" fill="#ff9800"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/></svg>';
+
+        SPRITES.flower_king = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="9" width="2" height="5" fill="#2e5c27"/><rect x="3" y="11" width="4" height="2" fill="#4a9e35"/><rect x="10" y="10" width="4" height="2" fill="#4a9e35"/><rect x="3" y="4" width="10" height="6" fill="#7cc85e"/><rect x="4" y="3" width="8" height="2" fill="#ffd54f"/><rect x="3" y="2" width="10" height="2" fill="#ffc107"/><rect x="5" y="1" width="6" height="2" fill="#ff9800"/><rect x="6" y="0" width="4" height="2" fill="#ff6f00"/><rect x="7" y="0" width="2" height="1" fill="#e65100"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/><rect x="4" y="5" width="2" height="2" fill="#fff59d" opacity="0.5"/></svg>';
+
+        SPRITES.golden_hamster = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="4" y="3" width="2" height="2" fill="#c9a033"/><rect x="10" y="3" width="2" height="2" fill="#c9a033"/><rect x="3" y="5" width="10" height="6" fill="#f5c842"/><rect x="4" y="4" width="8" height="2" fill="#e8b830"/><rect x="5" y="11" width="2" height="2" fill="#d4a020"/><rect x="9" y="11" width="2" height="2" fill="#d4a020"/><rect x="5" y="6" width="2" height="2" fill="#2c2c2c"/><rect x="9" y="6" width="2" height="2" fill="#2c2c2c"/><rect x="7" y="8" width="2" height="1" fill="#ff8a80"/><rect x="6" y="9" width="4" height="1" fill="#ffab91" opacity="0.6"/><rect x="6" y="7" width="1" height="1" fill="#fff" opacity="0.7"/><rect x="10" y="7" width="1" height="1" fill="#fff" opacity="0.7"/><rect x="3" y="7" width="1" height="3" fill="#f5c842" opacity="0.7"/><rect x="12" y="7" width="1" height="3" fill="#f5c842" opacity="0.7"/></svg>';
+
+        // --- Data helpers ---
+        function loadData() {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return defaultData();
+            try { return JSON.parse(raw); } catch (e) { return defaultData(); }
+        }
+
+        function defaultData() {
+            return {
+                storage: [],  // [{type, count}]
+                garden: []    // [{type, plantedDate, lastWatered, wateredToday}] (length up to GARDEN_SLOTS)
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function getTodayStr() {
+            var d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function getYesterdayStr() {
+            var d = new Date();
+            d.setDate(d.getDate() - 1);
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function totalStorageCount(data) {
+            var total = 0;
+            data.storage.forEach(function (s) { total += s.count; });
+            return total;
+        }
+
+        // --- Public: add item to storage ---
+        function addItem(type, count) {
+            var data = loadData();
+            if (totalStorageCount(data) + count > MAX_STORAGE) {
+                count = MAX_STORAGE - totalStorageCount(data);
+                if (count <= 0) return;
+            }
+            var existing = null;
+            for (var i = 0; i < data.storage.length; i++) {
+                if (data.storage[i].type === type) { existing = data.storage[i]; break; }
+            }
+            if (existing) {
+                existing.count += count;
+            } else {
+                if (data.storage.length < STORAGE_SLOTS) {
+                    data.storage.push({ type: type, count: count });
+                } else {
+                    return; // no empty slot
+                }
+            }
+            saveData(data);
+        }
+
+        // --- Selection state ---
+        var selectedStorage = -1; // index in storage array
+        var selectedGarden = -1;  // index in garden array
+
+        // --- Check growth (called on tab open) ---
+        function checkGrowth() {
+            var data = loadData();
+            var today = getTodayStr();
+            var yesterday = getYesterdayStr();
+            var changed = false;
+
+            data.garden.forEach(function (plot) {
+                if (!plot || !plot.type) return;
+                var itemDef = ITEMS[plot.type];
+                if (!itemDef || itemDef.stage === undefined) return;
+                // If watered yesterday, and growth hasn't been applied yet today
+                if (plot.lastWatered === yesterday && plot.grewOn !== today) {
+                    var currentStage = itemDef.stage;
+                    if (currentStage < 4) { // Can still grow (not king flower or hamster)
+                        var nextType = GROWTH_PATH[currentStage + 1];
+                        plot.type = nextType;
+                        plot.grewOn = today;
+                        changed = true;
+                    }
+                }
+                // Reset wateredToday if it's a new day
+                if (plot.wateredToday && plot.wateredToday !== today) {
+                    plot.wateredToday = null;
+                    changed = true;
+                }
+            });
+
+            if (changed) saveData(data);
+        }
+
+        // --- Render the garden UI ---
+        function render() {
+            var data = loadData();
+            selectedStorage = -1;
+            selectedGarden = -1;
+            dom.gardenActionInfo.classList.add('hidden');
+
+            renderGardenGrid(data);
+            renderStorageGrid(data);
+            dom.gardenCount.textContent = data.garden.length + ' / ' + GARDEN_SLOTS;
+            dom.storageCount.textContent = totalStorageCount(data) + ' / ' + MAX_STORAGE;
+        }
+
+        function renderGardenGrid(data) {
+            var html = '';
+            for (var i = 0; i < GARDEN_SLOTS; i++) {
+                var plot = data.garden[i];
+                if (plot && plot.type) {
+                    var today = getTodayStr();
+                    var isWatered = plot.wateredToday === today;
+                    var cls = 'pixel-slot' + (isWatered ? ' watered' : '');
+                    html += '<div class="' + cls + '" data-garden-idx="' + i + '">';
+                    if (isWatered) html += '<span class="watered-indicator">💧</span>';
+                    html += '<div class="pixel-sprite">' + (SPRITES[plot.type] || '') + '</div>';
+                    html += '<span class="item-name-label">' + (ITEMS[plot.type] ? ITEMS[plot.type].name : '') + '</span>';
+                    html += '</div>';
+                } else {
+                    html += '<div class="pixel-slot empty" data-garden-idx="' + i + '">';
+                    html += '<span class="item-name-label" style="opacity:0.25">空地</span>';
+                    html += '</div>';
+                }
+            }
+            dom.gardenGrid.innerHTML = html;
+
+            // Bind clicks
+            dom.gardenGrid.querySelectorAll('.pixel-slot').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    var idx = parseInt(this.dataset.gardenIdx, 10);
+                    onGardenSlotClick(idx);
+                });
+            });
+        }
+
+        function renderStorageGrid(data) {
+            var html = '';
+            for (var i = 0; i < STORAGE_SLOTS; i++) {
+                var item = data.storage[i];
+                if (item && item.count > 0) {
+                    html += '<div class="pixel-slot" data-storage-idx="' + i + '">';
+                    html += '<div class="pixel-sprite">' + (SPRITES[item.type] || '') + '</div>';
+                    html += '<span class="item-name-label">' + (ITEMS[item.type] ? ITEMS[item.type].name : '') + '</span>';
+                    if (item.count > 1) html += '<span class="item-count-badge">' + item.count + '</span>';
+                    html += '</div>';
+                } else {
+                    html += '<div class="pixel-slot empty" data-storage-idx="' + i + '">';
+                    html += '</div>';
+                }
+            }
+            dom.storageGrid.innerHTML = html;
+
+            // Bind clicks
+            dom.storageGrid.querySelectorAll('.pixel-slot').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    var idx = parseInt(this.dataset.storageIdx, 10);
+                    onStorageSlotClick(idx);
+                });
+            });
+        }
+
+        // --- Interactions ---
+        function onStorageSlotClick(idx) {
+            var data = loadData();
+            var item = data.storage[idx];
+            if (!item || item.count <= 0) return;
+
+            selectedStorage = idx;
+            selectedGarden = -1;
+
+            // Clear garden selection visuals
+            dom.gardenGrid.querySelectorAll('.pixel-slot').forEach(function (el) { el.classList.remove('selected'); });
+            dom.storageGrid.querySelectorAll('.pixel-slot').forEach(function (el) { el.classList.remove('selected'); });
+            dom.storageGrid.querySelector('[data-storage-idx="' + idx + '"]').classList.add('selected');
+
+            showStorageActions(data, idx);
+        }
+
+        function onGardenSlotClick(idx) {
+            var data = loadData();
+            var plot = data.garden[idx];
+
+            selectedGarden = idx;
+
+            // Clear selection visuals
+            dom.gardenGrid.querySelectorAll('.pixel-slot').forEach(function (el) { el.classList.remove('selected'); });
+            dom.storageGrid.querySelectorAll('.pixel-slot').forEach(function (el) { el.classList.remove('selected'); });
+
+            var el = dom.gardenGrid.querySelector('[data-garden-idx="' + idx + '"]');
+            if (el) el.classList.add('selected');
+
+            // If a storage item is selected and this is an empty plot, try planting
+            if (selectedStorage >= 0) {
+                var storageItem = data.storage[selectedStorage];
+                if (storageItem && ITEMS[storageItem.type] && ITEMS[storageItem.type].plantable && !plot) {
+                    doPlant(selectedStorage, idx);
+                    return;
+                }
+            }
+            selectedStorage = -1;
+
+            if (plot && plot.type) {
+                showGardenPlotActions(data, idx);
+            } else {
+                showEmptyPlotActions(idx);
+            }
+        }
+
+        function showStorageActions(data, idx) {
+            var item = data.storage[idx];
+            var info = ITEMS[item.type];
+            var panel = dom.gardenActionInfo;
+            panel.classList.remove('hidden');
+
+            var btnsHtml = '';
+            if (info && info.plantable) {
+                btnsHtml = '<button class="garden-act-btn primary" id="act-plant-select">种到花园</button>';
+            }
+
+            panel.innerHTML =
+                '<div class="garden-action-title">' + info.name + ' x' + item.count + '</div>' +
+                '<div class="garden-action-desc">' + info.desc + '</div>' +
+                (btnsHtml ? '<div class="garden-action-btns">' + btnsHtml + '</div>' : '');
+
+            if (info && info.plantable) {
+                document.getElementById('act-plant-select').addEventListener('click', function () {
+                    showToast('请点击花园中的空地来种植');
+                });
+            }
+        }
+
+        function showEmptyPlotActions(idx) {
+            var panel = dom.gardenActionInfo;
+            panel.classList.remove('hidden');
+            panel.innerHTML =
+                '<div class="garden-action-title">空地</div>' +
+                '<div class="garden-action-desc">从储物袋中选择甜甜花苗来种植</div>';
+        }
+
+        function showGardenPlotActions(data, gardenIdx) {
+            var plot = data.garden[gardenIdx];
+            var info = ITEMS[plot.type];
+            var panel = dom.gardenActionInfo;
+            panel.classList.remove('hidden');
+
+            var today = getTodayStr();
+            var isWatered = plot.wateredToday === today;
+            var stage = info ? info.stage : -1;
+
+            var btnsHtml = '';
+            // Water button (if has water drops and not already watered today)
+            var waterCount = getItemCount(data, 'water_drop');
+            if (!isWatered && stage >= 0 && stage < 4 && waterCount > 0) {
+                btnsHtml += '<button class="garden-act-btn primary" id="act-water">浇水 (💧x1)</button>';
+            } else if (isWatered && stage < 4) {
+                btnsHtml += '<button class="garden-act-btn" disabled>今日已浇水 ✓</button>';
+            }
+
+            // Ding ball boost (if has ding balls and flower can grow)
+            var ballCount = getItemCount(data, 'dingding_ball');
+            if (stage >= 0 && stage < 4 && ballCount > 0) {
+                btnsHtml += '<button class="garden-act-btn" id="act-boost">顶顶球加速</button>';
+            }
+
+            // King flower + ding ball = golden hamster
+            if (stage === 4 && ballCount > 0) {
+                btnsHtml += '<button class="garden-act-btn primary" id="act-evolve">喂顶顶球 ✨</button>';
+            }
+
+            // Harvest / Remove
+            btnsHtml += '<button class="garden-act-btn" id="act-harvest">移除</button>';
+
+            var statusText = '';
+            if (isWatered) statusText = '今日已浇水 💧';
+            else if (stage >= 0 && stage < 4) statusText = '需要浇水才能成长';
+            else if (stage === 4) statusText = '已完全成长！可以喂顶顶球';
+            else if (stage === 5) statusText = '黄金仓鼠！花园的骄傲';
+
+            panel.innerHTML =
+                '<div class="garden-action-title">' + (info ? info.name : '') + '</div>' +
+                '<div class="garden-action-desc">' + statusText + '</div>' +
+                '<div class="garden-action-btns">' + btnsHtml + '</div>';
+
+            // Bind actions
+            var waterBtn = document.getElementById('act-water');
+            if (waterBtn) waterBtn.addEventListener('click', function () { doWater(gardenIdx); });
+
+            var boostBtn = document.getElementById('act-boost');
+            if (boostBtn) boostBtn.addEventListener('click', function () { doBoost(gardenIdx); });
+
+            var evolveBtn = document.getElementById('act-evolve');
+            if (evolveBtn) evolveBtn.addEventListener('click', function () { doEvolve(gardenIdx); });
+
+            var harvestBtn = document.getElementById('act-harvest');
+            if (harvestBtn) harvestBtn.addEventListener('click', function () { doHarvest(gardenIdx); });
+        }
+
+        // --- Actions ---
+        function doPlant(storageIdx, gardenIdx) {
+            var data = loadData();
+            var item = data.storage[storageIdx];
+            if (!item || item.count <= 0) return;
+            if (data.garden[gardenIdx]) return; // occupied
+
+            // Place in garden
+            data.garden[gardenIdx] = {
+                type: item.type,
+                plantedDate: getTodayStr(),
+                lastWatered: null,
+                wateredToday: null,
+                grewOn: null
+            };
+
+            // Remove from storage
+            item.count--;
+            if (item.count <= 0) data.storage.splice(storageIdx, 1);
+
+            saveData(data);
+            showToast('种下了一棵' + ITEMS[item.type].name + '！');
+            render();
+        }
+
+        function doWater(gardenIdx) {
+            var data = loadData();
+            var plot = data.garden[gardenIdx];
+            if (!plot) return;
+
+            // Use water drop
+            if (!useItem(data, 'water_drop', 1)) {
+                showToast('没有小水滴了！');
+                return;
+            }
+
+            var today = getTodayStr();
+            plot.lastWatered = today;
+            plot.wateredToday = today;
+
+            saveData(data);
+            showToast('浇水成功！明天花儿会成长 🌱');
+            render();
+        }
+
+        function doBoost(gardenIdx) {
+            var data = loadData();
+            var plot = data.garden[gardenIdx];
+            if (!plot) return;
+
+            var info = ITEMS[plot.type];
+            if (!info || info.stage === undefined || info.stage >= 4) return;
+
+            if (!useItem(data, 'dingding_ball', 1)) {
+                showToast('没有顶顶球了！');
+                return;
+            }
+
+            // Advance one stage
+            var nextType = GROWTH_PATH[info.stage + 1];
+            plot.type = nextType;
+            plot.grewOn = getTodayStr();
+
+            saveData(data);
+            showToast('顶顶球加速成长！→ ' + ITEMS[nextType].name);
+            render();
+        }
+
+        function doEvolve(gardenIdx) {
+            var data = loadData();
+            var plot = data.garden[gardenIdx];
+            if (!plot || plot.type !== 'flower_king') return;
+
+            if (!useItem(data, 'dingding_ball', 1)) {
+                showToast('没有顶顶球了！');
+                return;
+            }
+
+            plot.type = 'golden_hamster';
+            plot.grewOn = getTodayStr();
+
+            saveData(data);
+            showToast('甜甜大王花变成了黄金仓鼠！🐹✨');
+            render();
+        }
+
+        function doHarvest(gardenIdx) {
+            var data = loadData();
+            // Remove from garden (shift to fill)
+            data.garden.splice(gardenIdx, 1);
+            saveData(data);
+            showToast('移除成功');
+            render();
+        }
+
+        // --- Helpers ---
+        function getItemCount(data, type) {
+            for (var i = 0; i < data.storage.length; i++) {
+                if (data.storage[i].type === type) return data.storage[i].count;
+            }
+            return 0;
+        }
+
+        function useItem(data, type, count) {
+            for (var i = 0; i < data.storage.length; i++) {
+                if (data.storage[i].type === type && data.storage[i].count >= count) {
+                    data.storage[i].count -= count;
+                    if (data.storage[i].count <= 0) data.storage.splice(i, 1);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // --- Toast ---
+        var toastTimer = null;
+        function showToast(msg) {
+            dom.gardenToast.textContent = msg;
+            dom.gardenToast.classList.remove('hidden');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                dom.gardenToast.classList.add('hidden');
+            }, 2200);
+        }
+
+        return {
+            addItem: addItem,
+            checkGrowth: checkGrowth,
+            render: render
+        };
+    })();
 
     // --- Boot ---
     init();
