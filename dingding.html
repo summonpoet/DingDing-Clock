@@ -158,6 +158,10 @@ body {
     color: #EF5350;
     font-weight: 700;
 }
+.quality-flow {
+    color: #CE93D8;
+    font-weight: 700;
+}
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -833,6 +837,117 @@ body {
 /* --- Pixel Art Sprites via CSS (inline SVG data URIs) --- */
 /* These are generated as small pixel-art-style inline SVGs */
 
+/* ============================================
+   Flow State (思如泉涌) Styles
+   ============================================ */
+
+/* --- Flow State Button in Modal --- */
+.flow-btn {
+    background: linear-gradient(135deg, #CE93D8, #AB47BC, #7B1FA2);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(171, 71, 188, 0.4);
+    flex-basis: 100%;
+    margin-top: 4px;
+    font-size: 16px;
+    padding: 12px 24px;
+}
+.flow-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(171, 71, 188, 0.5);
+}
+.flow-btn:active { transform: translateY(0) scale(0.98); }
+
+/* --- Modal buttons wrap for 3 buttons --- */
+.modal-buttons {
+    flex-wrap: wrap;
+}
+
+/* --- Flow Mode Visual Overrides --- */
+body.flow-mode {
+    background: linear-gradient(135deg, #1a0033 0%, #2d1b69 25%, #0d3b66 50%, #1b5e20 75%, #4a148c 100%);
+    animation: flow-bg-shift 8s ease-in-out infinite;
+}
+@keyframes flow-bg-shift {
+    0%, 100% { background: linear-gradient(135deg, #1a0033, #2d1b69, #0d3b66, #1b5e20, #4a148c); }
+    25% { background: linear-gradient(135deg, #4a148c, #880e4f, #e65100, #1a237e, #006064); }
+    50% { background: linear-gradient(135deg, #006064, #1b5e20, #4a148c, #880e4f, #1a0033); }
+    75% { background: linear-gradient(135deg, #880e4f, #1a237e, #1b5e20, #e65100, #2d1b69); }
+}
+
+body.flow-mode .bg-blob {
+    opacity: 0.6;
+    animation-duration: 6s;
+}
+body.flow-mode .blob-1 {
+    background: radial-gradient(circle, #e040fb, #aa00ff);
+}
+body.flow-mode .blob-2 {
+    background: radial-gradient(circle, #00e5ff, #2979ff);
+}
+body.flow-mode .blob-3 {
+    background: radial-gradient(circle, #76ff03, #00c853);
+}
+
+/* --- Flow mode stat label change --- */
+body.flow-mode .time-value {
+    background: linear-gradient(135deg, #CE93D8, #E040FB, #AA00FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* --- Mushroom container --- */
+.mushroom-container {
+    display: none;
+}
+body.flow-mode .mushroom-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.flow-mode .flower-container > svg {
+    display: none;
+}
+
+.mushroom-svg {
+    animation: mushroom-float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(224, 64, 251, 0.4));
+}
+@keyframes mushroom-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-8px) rotate(2deg); }
+    50% { transform: translateY(-4px) rotate(0deg); }
+    75% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+/* --- Particle Canvas --- */
+.flow-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    display: none;
+}
+body.flow-mode .flow-particles {
+    display: block;
+}
+
+/* --- Flow mode abandon button --- */
+body.flow-mode .abandon-btn {
+    background: rgba(171, 71, 188, 0.15);
+    border-color: rgba(171, 71, 188, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+}
+body.flow-mode .abandon-btn:hover {
+    background: rgba(171, 71, 188, 0.3);
+    border-color: rgba(171, 71, 188, 0.5);
+    color: #fff;
+}
+
     </style>
 </head>
 <body>
@@ -886,7 +1001,59 @@ body {
                 </div>
             </div>
 
+            <!-- Flow State Particle Canvas -->
+            <canvas id="flow-particles" class="flow-particles"></canvas>
+
             <div class="flower-container">
+                <!-- Flow State Mushroom (hidden by default) -->
+                <div class="mushroom-container" id="mushroom-container">
+                    <svg class="mushroom-svg" viewBox="0 0 200 280" width="220" height="310">
+                        <defs>
+                            <radialGradient id="cap-grad" cx="50%" cy="40%" r="55%">
+                                <stop offset="0%" stop-color="#E040FB"/>
+                                <stop offset="50%" stop-color="#AB47BC"/>
+                                <stop offset="100%" stop-color="#6A1B9A"/>
+                            </radialGradient>
+                            <radialGradient id="spot-grad" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#F3E5F5"/>
+                                <stop offset="100%" stop-color="#CE93D8"/>
+                            </radialGradient>
+                        </defs>
+                        <!-- Stem -->
+                        <rect x="80" y="160" width="40" height="90" rx="12" fill="#F3E5F5"/>
+                        <rect x="85" y="165" width="12" height="80" rx="6" fill="#EDE7F6" opacity="0.6"/>
+                        <!-- Ground -->
+                        <ellipse cx="100" cy="252" rx="50" ry="10" fill="rgba(106,27,154,0.25)"/>
+                        <!-- Cap -->
+                        <ellipse cx="100" cy="155" rx="80" ry="65" fill="url(#cap-grad)"/>
+                        <!-- Cap bottom rim -->
+                        <ellipse cx="100" cy="168" rx="75" ry="12" fill="#4A148C" opacity="0.3"/>
+                        <!-- Spots -->
+                        <circle cx="70" cy="125" r="12" fill="url(#spot-grad)" opacity="0.85"/>
+                        <circle cx="120" cy="115" r="16" fill="url(#spot-grad)" opacity="0.8"/>
+                        <circle cx="90" cy="145" r="10" fill="url(#spot-grad)" opacity="0.7"/>
+                        <circle cx="135" cy="140" r="8" fill="url(#spot-grad)" opacity="0.75"/>
+                        <circle cx="60" cy="150" r="7" fill="url(#spot-grad)" opacity="0.6"/>
+                        <!-- Sparkles -->
+                        <circle cx="55" cy="110" r="3" fill="#fff" opacity="0.8">
+                            <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="145" cy="105" r="2.5" fill="#fff" opacity="0.6">
+                            <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="100" cy="95" r="2" fill="#fff" opacity="0.7">
+                            <animate attributeName="opacity" values="0.7;0.15;0.7" dur="1.8s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Eyes (cute) -->
+                        <ellipse cx="88" cy="185" rx="5" ry="6" fill="#4A148C"/>
+                        <ellipse cx="112" cy="185" rx="5" ry="6" fill="#4A148C"/>
+                        <circle cx="86" cy="183" r="2" fill="#fff" opacity="0.8"/>
+                        <circle cx="110" cy="183" r="2" fill="#fff" opacity="0.8"/>
+                        <!-- Mouth -->
+                        <path d="M95,195 Q100,202 105,195" stroke="#4A148C" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
                 <svg id="flower-svg" class="flower" viewBox="0 0 200 320" width="220" height="350">
                     <defs>
                         <radialGradient id="petal-grad-1" cx="50%" cy="30%" r="70%">
@@ -968,6 +1135,7 @@ body {
                 <div class="modal-buttons">
                     <button id="ding-btn" class="modal-btn ding-btn">顶！</button>
                     <button id="wei-btn" class="modal-btn wei-btn">萎...</button>
+                    <button id="flow-btn" class="modal-btn flow-btn">我思如泉涌！</button>
                 </div>
             </div>
         </div>
@@ -1040,7 +1208,11 @@ body {
         isPaused: false,
         recorded: false,
         startTime: null,
-        checkpoints: { third: false, half: false, twoThirds: false }
+        checkpoints: { third: false, half: false, twoThirds: false },
+        // Flow state
+        isFlowMode: false,
+        flowSeconds: 0,
+        flowAnimFrame: null
     };
 
     // --- DOM ---
@@ -1064,6 +1236,9 @@ body {
         flower: document.getElementById('flower-svg'),
         dingBtn: document.getElementById('ding-btn'),
         weiBtn: document.getElementById('wei-btn'),
+        flowBtn: document.getElementById('flow-btn'),
+        flowParticles: document.getElementById('flow-particles'),
+        mushroomContainer: document.getElementById('mushroom-container'),
         resetBtn: document.getElementById('reset-btn'),
         restartBtn: document.getElementById('restart-btn'),
         finalDuration: document.getElementById('final-duration'),
@@ -1104,6 +1279,7 @@ body {
         // Checkpoint modal buttons
         dom.dingBtn.addEventListener('click', handleDing);
         dom.weiBtn.addEventListener('click', handleWei);
+        dom.flowBtn.addEventListener('click', handleFlow);
 
         // Reset / Restart
         dom.resetBtn.addEventListener('click', function () {
@@ -1280,6 +1456,185 @@ body {
         state.isPaused = false;
     }
 
+    // --- Flow State (思如泉涌) ---
+    function handleFlow() {
+        // Complete the current timer as success first
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+        state.remainingSeconds = 0;
+        dom.timeDisplay.classList.remove('running');
+
+        // Save the completed record (task success)
+        if (!state.recorded) {
+            saveRecord(true);
+            state.recorded = true;
+            Garden.addItem('sweet_seedling', 1);
+            Garden.addItem('water_drop', 2);
+        }
+
+        // Enter flow mode
+        state.isFlowMode = true;
+        state.flowSeconds = 0;
+        closeModal();
+
+        // Visual changes
+        document.body.classList.add('flow-mode');
+
+        // Update stat label to show count-up
+        var timeLabel = dom.timeDisplay.closest('.stat-item').querySelector('.stat-label');
+        if (timeLabel) timeLabel.textContent = '泉涌时间';
+        dom.timeDisplay.textContent = '00:00';
+        dom.timeDisplay.classList.add('running');
+
+        // Change button text
+        dom.resetBtn.textContent = '贤者时间到';
+
+        // Start count-up timer
+        state.timerInterval = setInterval(flowTick, 1000);
+
+        // Start particle effects
+        startFlowParticles();
+
+        playFlowSound();
+    }
+
+    function flowTick() {
+        state.flowSeconds++;
+        dom.timeDisplay.textContent = formatMMSS(state.flowSeconds);
+    }
+
+    function endFlowState() {
+        if (!state.isFlowMode) return;
+
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+        dom.timeDisplay.classList.remove('running');
+
+        // Stop particles
+        stopFlowParticles();
+
+        // Remove flow mode visuals
+        document.body.classList.remove('flow-mode');
+
+        // Reward: 1 迷幻蘑菇
+        Garden.addItem('psychedelic_mushroom', 1);
+
+        // Update the existing record to include flow duration
+        var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
+        if (records.length > 0) {
+            var last = records[records.length - 1];
+            last.flowMinutes = Math.round(state.flowSeconds / 60);
+            localStorage.setItem('dingding-records', JSON.stringify(records));
+        }
+
+        // Show completion screen with flow info
+        var totalFocusMinutes = Math.round(state.elapsedSeconds / 60);
+        var flowMinutes = Math.round(state.flowSeconds / 60);
+        dom.finalDuration.textContent = totalFocusMinutes;
+        dom.finalDing.textContent = state.dingCount;
+        dom.finalWei.textContent = flowMinutes;
+
+        // Update labels for flow completion
+        var labels = dom.completionScreen.querySelectorAll('.completion-stat-label');
+        if (labels.length >= 3) {
+            labels[2].textContent = '泉涌时间(分钟)';
+        }
+
+        dom.completionScreen.querySelector('.completion-title').textContent = '思如泉涌！';
+        dom.completionScreen.querySelector('.completion-subtitle').textContent = '灵感迸发，收获迷幻蘑菇 x1';
+
+        state.isFlowMode = false;
+        state.flowSeconds = 0;
+        showScreen('completion');
+    }
+
+    // --- Flow Particles ---
+    var flowParticlesList = [];
+    var flowParticlesRunning = false;
+
+    function startFlowParticles() {
+        var canvas = dom.flowParticles;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        flowParticlesList = [];
+        flowParticlesRunning = true;
+
+        var colors = ['#E040FB', '#AA00FF', '#00E5FF', '#76FF03', '#FFAB00', '#FF4081', '#7C4DFF', '#00BFA5'];
+        for (var i = 0; i < 40; i++) {
+            flowParticlesList.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: -Math.random() * 1.5 - 0.5,
+                r: Math.random() * 5 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                alpha: Math.random() * 0.6 + 0.3,
+                life: 1
+            });
+        }
+        drawFlowParticles();
+    }
+
+    function drawFlowParticles() {
+        if (!flowParticlesRunning) return;
+        var canvas = dom.flowParticles;
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        var colors = ['#E040FB', '#AA00FF', '#00E5FF', '#76FF03', '#FFAB00', '#FF4081', '#7C4DFF', '#00BFA5'];
+
+        flowParticlesList.forEach(function (p) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.002;
+
+            if (p.alpha <= 0 || p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
+                p.x = Math.random() * canvas.width;
+                p.y = canvas.height + 10;
+                p.alpha = Math.random() * 0.6 + 0.3;
+                p.vx = (Math.random() - 0.5) * 1.5;
+                p.vy = -Math.random() * 1.5 - 0.5;
+                p.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        });
+
+        state.flowAnimFrame = requestAnimationFrame(drawFlowParticles);
+    }
+
+    function stopFlowParticles() {
+        flowParticlesRunning = false;
+        if (state.flowAnimFrame) {
+            cancelAnimationFrame(state.flowAnimFrame);
+            state.flowAnimFrame = null;
+        }
+        var canvas = dom.flowParticles;
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function playFlowSound() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            [523, 659, 784, 988, 1175].forEach(function (freq, i) {
+                var o = ctx.createOscillator(), g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = freq; o.type = 'triangle';
+                var t = ctx.currentTime + i * 0.12;
+                g.gain.setValueAtTime(0.2, t);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+                o.start(t); o.stop(t + 0.6);
+            });
+            setTimeout(function () { ctx.close(); }, 2000);
+        } catch (e) {}
+    }
+
     // --- Complete ---
     function completeTimer() {
         clearInterval(state.timerInterval);
@@ -1304,6 +1659,12 @@ body {
 
     // --- Reset ---
     function resetToSetup(fromCompletion) {
+        // If in flow mode, end it instead of resetting
+        if (state.isFlowMode) {
+            endFlowState();
+            return;
+        }
+
         // Save incomplete record if timer was running
         if (!fromCompletion && state.timerInterval && state.elapsedSeconds > 10 && !state.recorded) {
             saveRecord(false);
@@ -1318,6 +1679,23 @@ body {
         }
         dom.timeDisplay.classList.remove('running');
         dom.flower.classList.remove('wilted');
+
+        // Clean up flow mode visuals (in case)
+        document.body.classList.remove('flow-mode');
+        stopFlowParticles();
+
+        // Reset stat labels to default
+        var timeLabel = dom.timeDisplay.closest('.stat-item').querySelector('.stat-label');
+        if (timeLabel) timeLabel.textContent = '剩余时间';
+        dom.resetBtn.textContent = '我承认，我萎了';
+
+        // Reset completion screen labels
+        var labels = dom.completionScreen.querySelectorAll('.completion-stat-label');
+        if (labels.length >= 3) labels[2].textContent = '萎的次数';
+        var compTitle = dom.completionScreen.querySelector('.completion-title');
+        if (compTitle) compTitle.textContent = '专注完成！';
+        var compSub = dom.completionScreen.querySelector('.completion-subtitle');
+        if (compSub) compSub.textContent = '辛苦了，休息一下吧';
 
         // Reset setup to phase 1
         dom.setupPhase1.style.display = '';
@@ -1438,6 +1816,10 @@ body {
                 text = timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
                     '过程中你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
                     '你进入了<span class="' + qc + '">' + qt + '</span>的心流';
+                // Flow state addition
+                if (record.flowMinutes && record.flowMinutes > 0) {
+                    text += '，随后他思如泉涌，灵感迸发了<span class="quality-flow">' + record.flowMinutes + '</span>分钟';
+                }
             }
 
             return '<div class="record-entry glass-card">' +
@@ -1515,7 +1897,8 @@ body {
             flower_stage2: { name: '有一点甜的甜甜花', desc: '在慢慢成长', stage: 2 },
             flower_stage3: { name: '中流砥柱的甜甜花', desc: '坚强的花朵', stage: 3 },
             flower_king: { name: '甜甜大王花', desc: '传说中的大王花！', stage: 4 },
-            golden_hamster: { name: '黄金仓鼠', desc: '甜甜花园的终极奖励！', stage: 5 }
+            golden_hamster: { name: '黄金仓鼠', desc: '甜甜花园的终极奖励！', stage: 5 },
+            psychedelic_mushroom: { name: '迷幻蘑菇', desc: '思如泉涌的结晶！' }
         };
 
         // Growth path: stage index -> item type
@@ -1540,6 +1923,8 @@ body {
         SPRITES.flower_king = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="7" y="9" width="2" height="5" fill="#2e5c27"/><rect x="3" y="11" width="4" height="2" fill="#4a9e35"/><rect x="10" y="10" width="4" height="2" fill="#4a9e35"/><rect x="3" y="4" width="10" height="6" fill="#7cc85e"/><rect x="4" y="3" width="8" height="2" fill="#ffd54f"/><rect x="3" y="2" width="10" height="2" fill="#ffc107"/><rect x="5" y="1" width="6" height="2" fill="#ff9800"/><rect x="6" y="0" width="4" height="2" fill="#ff6f00"/><rect x="7" y="0" width="2" height="1" fill="#e65100"/><rect x="5" y="14" width="6" height="1" fill="#8B6914"/><rect x="4" y="5" width="2" height="2" fill="#fff59d" opacity="0.5"/></svg>';
 
         SPRITES.golden_hamster = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="4" y="3" width="2" height="2" fill="#c9a033"/><rect x="10" y="3" width="2" height="2" fill="#c9a033"/><rect x="3" y="5" width="10" height="6" fill="#f5c842"/><rect x="4" y="4" width="8" height="2" fill="#e8b830"/><rect x="5" y="11" width="2" height="2" fill="#d4a020"/><rect x="9" y="11" width="2" height="2" fill="#d4a020"/><rect x="5" y="6" width="2" height="2" fill="#2c2c2c"/><rect x="9" y="6" width="2" height="2" fill="#2c2c2c"/><rect x="7" y="8" width="2" height="1" fill="#ff8a80"/><rect x="6" y="9" width="4" height="1" fill="#ffab91" opacity="0.6"/><rect x="6" y="7" width="1" height="1" fill="#fff" opacity="0.7"/><rect x="10" y="7" width="1" height="1" fill="#fff" opacity="0.7"/><rect x="3" y="7" width="1" height="3" fill="#f5c842" opacity="0.7"/><rect x="12" y="7" width="1" height="3" fill="#f5c842" opacity="0.7"/></svg>';
+
+        SPRITES.psychedelic_mushroom = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="32" height="32"><rect x="6" y="9" width="4" height="5" fill="#f3e5f5"/><rect x="7" y="10" width="1" height="3" fill="#ede7f6" opacity="0.6"/><rect x="4" y="4" width="8" height="6" rx="0" fill="#ab47bc"/><rect x="3" y="5" width="10" height="4" fill="#8e24aa"/><rect x="5" y="3" width="6" height="2" fill="#ce93d8"/><rect x="5" y="5" width="2" height="2" fill="#f3e5f5" opacity="0.8"/><rect x="9" y="4" width="3" height="3" fill="#f3e5f5" opacity="0.7"/><rect x="7" y="7" width="2" height="1" fill="#f3e5f5" opacity="0.6"/><rect x="5" y="14" width="6" height="1" fill="#6a1b9a" opacity="0.3"/></svg>';
 
         // --- Data helpers ---
         function loadData() {
