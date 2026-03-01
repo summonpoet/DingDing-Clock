@@ -1209,8 +1209,14 @@ body.flow-mode .abandon-btn:hover {
         recorded: false,
         startTime: null,
         checkpoints: { third: false, half: false, twoThirds: false },
+        // Wall-clock tracking
+        timerStartTs: 0,     // Date.now() when timer started
+        deadlineTs: 0,       // Date.now() when timer should end
+        pausedAt: 0,         // Date.now() when paused (checkpoint modal)
+        totalPausedMs: 0,    // accumulated pause time in ms
         // Flow state
         isFlowMode: false,
+        flowStartTs: 0,      // Date.now() when flow mode started
         flowSeconds: 0,
         flowAnimFrame: null
     };
@@ -1304,6 +1310,17 @@ body.flow-mode .abandon-btn:hover {
             }
         });
 
+        // Visibility change: sync timer immediately when tab becomes visible
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && state.timerInterval) {
+                if (state.isFlowMode) {
+                    flowTick();
+                } else if (!state.isPaused) {
+                    tick();
+                }
+            }
+        });
+
         // Enter key in name input -> focus first time button
         dom.taskNameInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
@@ -1365,13 +1382,21 @@ body.flow-mode .abandon-btn:hover {
         state.originalDuration = minutes * 60;
         state.durationMinutes = minutes;
         state.startTime = new Date();
-        state.remainingSeconds = state.originalDuration;
-        state.elapsedSeconds = 0;
         state.dingCount = 0;
         state.weiCount = 0;
         state.isPaused = false;
         state.recorded = false;
         state.checkpoints = { third: false, half: false, twoThirds: false };
+
+        // Wall-clock based timing
+        var now = Date.now();
+        state.timerStartTs = now;
+        state.deadlineTs = now + state.originalDuration * 1000;
+        state.pausedAt = 0;
+        state.totalPausedMs = 0;
+
+        // Compute initial display values
+        syncTimerFromClock();
 
         dom.timerTaskName.textContent = state.taskName;
         showScreen('timer');
@@ -1381,11 +1406,24 @@ body.flow-mode .abandon-btn:hover {
         state.timerInterval = setInterval(tick, 1000);
     }
 
+    // Sync elapsed/remaining from real wall-clock
+    function syncTimerFromClock() {
+        var now = Date.now();
+        var effectiveNow = now;
+        // If paused, don't advance past the pause point
+        if (state.isPaused && state.pausedAt) {
+            effectiveNow = state.pausedAt;
+        }
+        var elapsedMs = effectiveNow - state.timerStartTs - state.totalPausedMs;
+        state.elapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+        var remainMs = state.deadlineTs - effectiveNow;
+        state.remainingSeconds = Math.max(0, Math.ceil(remainMs / 1000));
+    }
+
     // --- Tick ---
     function tick() {
         if (state.isPaused) return;
-        state.elapsedSeconds++;
-        state.remainingSeconds--;
+        syncTimerFromClock();
 
         if (state.remainingSeconds <= 0) {
             state.remainingSeconds = 0;
@@ -1418,6 +1456,7 @@ body.flow-mode .abandon-btn:hover {
 
     function showCheckpointModal(elapsedSeconds) {
         state.isPaused = true;
+        state.pausedAt = Date.now();
         dom.modalText.textContent = '你已经专注' + formatElapsedTime(elapsedSeconds) + '，还顶得住吗？！';
         dom.modal.classList.remove('hidden');
         playDingSound();
@@ -1428,15 +1467,16 @@ body.flow-mode .abandon-btn:hover {
         state.dingCount++;
         // Drop: each "顶" gives 1 顶顶球
         Garden.addItem('dingding_ball', 1);
-        state.remainingSeconds -= 180;
+        // Shift deadline earlier by 3 minutes
+        state.deadlineTs -= 180 * 1000;
+        closeModal();
+        syncTimerFromClock();
         if (state.remainingSeconds <= 0) {
             state.remainingSeconds = 0;
-            closeModal();
             updateDisplay();
             completeTimer();
             return;
         }
-        closeModal();
         updateDisplay();
     }
 
@@ -1444,15 +1484,24 @@ body.flow-mode .abandon-btn:hover {
     function handleWei() {
         state.weiCount++;
         if (state.weiCount > 1) {
-            state.remainingSeconds += 300;
+            // Shift deadline later by 5 minutes
+            state.deadlineTs += 300 * 1000;
         }
         closeModal();
+        syncTimerFromClock();
         updateDisplay();
         updateFlower();
     }
 
     function closeModal() {
         dom.modal.classList.add('hidden');
+        // Accumulate pause duration and shift deadline forward
+        if (state.pausedAt) {
+            var pausedMs = Date.now() - state.pausedAt;
+            state.totalPausedMs += pausedMs;
+            state.deadlineTs += pausedMs; // push deadline by paused time
+            state.pausedAt = 0;
+        }
         state.isPaused = false;
     }
 
@@ -1474,6 +1523,7 @@ body.flow-mode .abandon-btn:hover {
 
         // Enter flow mode
         state.isFlowMode = true;
+        state.flowStartTs = Date.now();
         state.flowSeconds = 0;
         closeModal();
 
@@ -1499,7 +1549,7 @@ body.flow-mode .abandon-btn:hover {
     }
 
     function flowTick() {
-        state.flowSeconds++;
+        state.flowSeconds = Math.floor((Date.now() - state.flowStartTs) / 1000);
         dom.timeDisplay.textContent = formatMMSS(state.flowSeconds);
     }
 
