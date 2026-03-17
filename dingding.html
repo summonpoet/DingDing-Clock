@@ -1841,8 +1841,13 @@ body.flow-mode .abandon-btn:hover {
         // Show banner
         showPlannerBanner(task);
 
-        // Pre-fill task name
+        // Skip Phase 1 and go directly to Phase 2 (task is already determined)
+        dom.setupPhase1.style.display = 'none';
+        dom.setupPhase2.classList.remove('hidden');
+
+        // Pre-fill task name and focus on time selection
         dom.taskNameInput.value = task.name;
+        dom.timeBtns[0].focus();
     }
 
     function showPlannerBanner(task) {
