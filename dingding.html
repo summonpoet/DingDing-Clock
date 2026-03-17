@@ -948,6 +948,319 @@ body.flow-mode .abandon-btn:hover {
     color: #fff;
 }
 
+    /* ============================================
+       Overall Planner Styles
+       ============================================ */
+
+    .view-switcher {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 4px;
+        z-index: 70;
+        gap: 4px;
+    }
+
+    .view-btn {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .view-btn.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.95);
+    }
+
+    .view-btn:hover:not(.active) {
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    /* Planner View */
+    .planner-view {
+        width: 100%;
+        max-width: 480px;
+        padding: 80px 20px 100px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .planner-view.hidden {
+        display: none;
+    }
+
+    .planner-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .planner-title {
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #FFB3BA, #FFC3A0, #FFE082);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+
+    .planner-subtitle {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Planner Form */
+    .planner-form {
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+
+    .planner-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.3s ease;
+        margin-bottom: 16px;
+    }
+
+    .planner-input:focus {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .planner-input::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+    }
+
+    .planner-time-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .planner-number-input {
+        width: 70px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 10px;
+        color: #fff;
+        font-size: 16px;
+        font-family: inherit;
+        text-align: center;
+        outline: none;
+    }
+
+    .planner-number-input:focus {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .planner-add-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    /* Planner List */
+    .planner-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .planner-item {
+        padding: 20px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .planner-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .planner-item-name {
+        font-size: 17px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+    }
+
+    .planner-item-delete {
+        background: transparent;
+        border: none;
+        color: rgba(239, 83, 80, 0.5);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .planner-item-delete:hover {
+        color: rgba(239, 83, 80, 0.9);
+        background: rgba(239, 83, 80, 0.1);
+    }
+
+    .planner-progress-section {
+        margin-bottom: 16px;
+    }
+
+    .planner-progress-bar-bg {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    .planner-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #66BB6A, #43A047);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    .planner-progress-bar.completed {
+        background: linear-gradient(90deg, #FFD700, #FFA000);
+    }
+
+    .planner-progress-text {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .planner-progress-percent {
+        color: #66BB6A;
+        font-weight: 700;
+    }
+
+    .planner-progress-percent.completed {
+        color: #FFD700;
+    }
+
+    .planner-start-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        background: linear-gradient(135deg, rgba(102, 187, 106, 0.25), rgba(67, 160, 71, 0.25));
+        border-color: rgba(102, 187, 106, 0.4);
+    }
+
+    .planner-start-btn:hover {
+        background: linear-gradient(135deg, rgba(102, 187, 106, 0.4), rgba(67, 160, 71, 0.4));
+        border-color: rgba(102, 187, 106, 0.6);
+    }
+
+    .planner-start-btn.completed {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 160, 0, 0.2));
+        border-color: rgba(255, 215, 0, 0.4);
+        color: #FFD700;
+    }
+
+    .planner-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 15px;
+    }
+
+    .planner-empty.hidden {
+        display: none;
+    }
+
+    /* Planner Task Banner in Setup Screen */
+    .planner-task-banner {
+        background: linear-gradient(135deg, rgba(102, 187, 106, 0.15), rgba(67, 160, 71, 0.15));
+        border: 1px solid rgba(102, 187, 106, 0.3);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        text-align: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .planner-task-banner.hidden {
+        display: none;
+    }
+
+    .banner-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .banner-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        margin-left: 4px;
+    }
+
+    .banner-progress {
+        font-size: 13px;
+        color: #66BB6A;
+        margin-left: 8px;
+        font-weight: 600;
+    }
+
+    /* Timer Planner Info */
+    .timer-planner-info {
+        background: rgba(102, 187, 106, 0.1);
+        border: 1px solid rgba(102, 187, 106, 0.2);
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+    }
+
+    .timer-planner-info.hidden {
+        display: none;
+    }
+
+    @media (max-width: 400px) {
+        .view-switcher {
+            top: 12px;
+        }
+        .view-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        .planner-view {
+            padding-top: 70px;
+        }
+        .planner-title {
+            font-size: 24px;
+        }
+        .planner-form {
+            padding: 18px;
+        }
+    }
+
     </style>
 </head>
 <body>
@@ -958,8 +1271,44 @@ body.flow-mode .abandon-btn:hover {
 
     <!-- ======== Focus Tab ======== -->
     <div class="app-container" id="focus-tab">
+        <!-- View Switcher -->
+        <div class="view-switcher" id="view-switcher">
+            <button class="view-btn active" data-view="quick">快速专注</button>
+            <button class="view-btn" data-view="planner">规划器</button>
+        </div>
+
+        <!-- Planner View -->
+        <div id="planner-view" class="planner-view hidden">
+            <div class="planner-header">
+                <h2 class="planner-title">整体规划</h2>
+                <p class="planner-subtitle">管理你的大任务，追踪总体进度</p>
+            </div>
+
+            <!-- Add Task Form -->
+            <div class="planner-form glass-card">
+                <input type="text" id="planner-task-name" class="planner-input" placeholder="任务名称（如：做研究）" maxlength="30">
+                <div class="planner-time-input">
+                    <label>预计总时间：</label>
+                    <input type="number" id="planner-total-hours" class="planner-number-input" min="0.5" max="100" step="0.5" value="2">
+                    <span>小时</span>
+                </div>
+                <button id="planner-add-btn" class="glass-btn planner-add-btn">添加任务</button>
+            </div>
+
+            <!-- Task List -->
+            <div id="planner-list" class="planner-list"></div>
+
+            <!-- Empty State -->
+            <div id="planner-empty" class="planner-empty hidden">还没有规划任务，添加一个吧！</div>
+        </div>
+
         <!-- Setup Screen -->
-        <div id="setup-screen" class="screen">
+        <div id="setup-screen" class="screen" data-from-planner="false">
+            <div id="planner-task-banner" class="planner-task-banner hidden">
+                <span class="banner-label">正在执行规划任务：</span>
+                <span id="planner-banner-name" class="banner-name"></span>
+                <span id="planner-banner-progress" class="banner-progress"></span>
+            </div>
             <div class="setup-card glass-card">
                 <h1 class="app-title">DingDing 番茄钟</h1>
 
@@ -984,8 +1333,9 @@ body.flow-mode .abandon-btn:hover {
         </div>
 
         <!-- Timer Screen -->
-        <div id="timer-screen" class="screen hidden">
+        <div id="timer-screen" class="screen hidden" data-planner-id="">
             <div class="timer-task-name" id="timer-task-name"></div>
+            <div id="timer-planner-info" class="timer-planner-info hidden"></div>
             <div class="stats-bar">
                 <div class="stat-item glass-card">
                     <span class="stat-label">剩余时间</span>
@@ -1226,6 +1576,19 @@ body.flow-mode .abandon-btn:hover {
         focusTab: document.getElementById('focus-tab'),
         notebookTab: document.getElementById('notebook-tab'),
         tabBtns: document.querySelectorAll('.tab-btn'),
+        // View switcher & Planner
+        viewSwitcher: document.getElementById('view-switcher'),
+        viewBtns: document.querySelectorAll('.view-btn'),
+        plannerView: document.getElementById('planner-view'),
+        plannerTaskName: document.getElementById('planner-task-name'),
+        plannerTotalHours: document.getElementById('planner-total-hours'),
+        plannerAddBtn: document.getElementById('planner-add-btn'),
+        plannerList: document.getElementById('planner-list'),
+        plannerEmpty: document.getElementById('planner-empty'),
+        plannerTaskBanner: document.getElementById('planner-task-banner'),
+        plannerBannerName: document.getElementById('planner-banner-name'),
+        plannerBannerProgress: document.getElementById('planner-banner-progress'),
+        timerPlannerInfo: document.getElementById('timer-planner-info'),
         setupScreen: document.getElementById('setup-screen'),
         timerScreen: document.getElementById('timer-screen'),
         completionScreen: document.getElementById('completion-screen'),
@@ -1264,6 +1627,240 @@ body.flow-mode .abandon-btn:hover {
         gardenActionInfo: document.getElementById('garden-action-info'),
         gardenToast: document.getElementById('garden-toast')
     };
+
+    // ============================================
+    // Overall Planner Module
+    // ============================================
+    var Planner = (function () {
+        var STORAGE_KEY = 'dingding-planner';
+
+        function loadTasks() {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch (e) { return []; }
+        }
+
+        function saveTasks(tasks) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        }
+
+        function generateId() {
+            return 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function addTask(name, totalHours) {
+            var tasks = loadTasks();
+            tasks.push({
+                id: generateId(),
+                name: name,
+                totalHours: totalHours,
+                completedHours: 0,
+                createdAt: new Date().toISOString()
+            });
+            saveTasks(tasks);
+            return tasks;
+        }
+
+        function deleteTask(id) {
+            var tasks = loadTasks();
+            tasks = tasks.filter(function (t) { return t.id !== id; });
+            saveTasks(tasks);
+            return tasks;
+        }
+
+        function updateProgress(id, hours) {
+            var tasks = loadTasks();
+            var task = tasks.find(function (t) { return t.id === id; });
+            if (task) {
+                task.completedHours = Math.min(task.completedHours + hours, task.totalHours);
+                saveTasks(tasks);
+            }
+            return tasks;
+        }
+
+        function getTask(id) {
+            var tasks = loadTasks();
+            return tasks.find(function (t) { return t.id === id; });
+        }
+
+        function getProgressPercent(task) {
+            return Math.round((task.completedHours / task.totalHours) * 100);
+        }
+
+        return {
+            loadTasks: loadTasks,
+            addTask: addTask,
+            deleteTask: deleteTask,
+            updateProgress: updateProgress,
+            getTask: getTask,
+            getProgressPercent: getProgressPercent
+        };
+    })();
+
+    // --- Planner UI Functions ---
+    var currentPlannerId = '';
+
+    function initPlanner() {
+        // View switcher
+        dom.viewBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                switchView(this.dataset.view);
+            });
+        });
+
+        // Add task button
+        dom.plannerAddBtn.addEventListener('click', function () {
+            var name = dom.plannerTaskName.value.trim();
+            var hours = parseFloat(dom.plannerTotalHours.value);
+
+            if (!name) {
+                alert('请输入任务名称');
+                return;
+            }
+            if (isNaN(hours) || hours <= 0) {
+                alert('请输入有效的时间');
+                return;
+            }
+
+            Planner.addTask(name, hours);
+            dom.plannerTaskName.value = '';
+            renderPlanner();
+        });
+
+        // Enter key in planner inputs
+        dom.plannerTaskName.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                dom.plannerTotalHours.focus();
+            }
+        });
+        dom.plannerTotalHours.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                dom.plannerAddBtn.click();
+            }
+        });
+    }
+
+    function switchView(view) {
+        dom.viewBtns.forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.view === view);
+        });
+
+        if (view === 'quick') {
+            dom.setupScreen.classList.remove('hidden');
+            dom.plannerView.classList.add('hidden');
+            dom.setupScreen.dataset.fromPlanner = 'false';
+            hidePlannerBanner();
+        } else {
+            dom.setupScreen.classList.add('hidden');
+            dom.plannerView.classList.remove('hidden');
+            renderPlanner();
+        }
+    }
+
+    function renderPlanner() {
+        var tasks = Planner.loadTasks();
+        var html = '';
+
+        if (tasks.length === 0) {
+            dom.plannerList.innerHTML = '';
+            dom.plannerEmpty.classList.remove('hidden');
+            return;
+        }
+
+        dom.plannerEmpty.classList.add('hidden');
+
+        tasks.forEach(function (task) {
+            var percent = Planner.getProgressPercent(task);
+            var isCompleted = percent >= 100;
+            var progressText = task.completedHours.toFixed(1) + ' / ' + task.totalHours + ' 小时';
+
+            html += '<div class="planner-item glass-card" data-id="' + task.id + '">';
+            html += '<div class="planner-item-header">';
+            html += '<span class="planner-item-name">' + escapeHtml(task.name) + '</span>';
+            html += '<button class="planner-item-delete" data-delete="' + task.id + '">删除</button>';
+            html += '</div>';
+            html += '<div class="planner-progress-section">';
+            html += '<div class="planner-progress-bar-bg">';
+            html += '<div class="planner-progress-bar ' + (isCompleted ? 'completed' : '') + '" style="width: ' + Math.min(percent, 100) + '%"></div>';
+            html += '</div>';
+            html += '<div class="planner-progress-text">';
+            html += '<span>' + progressText + '</span>';
+            html += '<span class="planner-progress-percent ' + (isCompleted ? 'completed' : '') + '">' + percent + '%</span>';
+            html += '</div>';
+            html += '</div>';
+            html += '<button class="glass-btn planner-start-btn ' + (isCompleted ? 'completed' : '') + '" data-start="' + task.id + '">';
+            html += isCompleted ? '已完成 ✓' : '开始该任务';
+            html += '</button>';
+            html += '</div>';
+        });
+
+        dom.plannerList.innerHTML = html;
+
+        // Bind delete buttons
+        dom.plannerList.querySelectorAll('.planner-item-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (confirm('确定要删除这个任务吗？')) {
+                    Planner.deleteTask(this.dataset.delete);
+                    renderPlanner();
+                }
+            });
+        });
+
+        // Bind start buttons
+        dom.plannerList.querySelectorAll('.planner-start-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var id = this.dataset.start;
+                startPlannerTask(id);
+            });
+        });
+    }
+
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function startPlannerTask(id) {
+        var task = Planner.getTask(id);
+        if (!task) return;
+
+        // Check if already completed
+        if (Planner.getProgressPercent(task) >= 100) {
+            alert('该任务已完成！');
+            return;
+        }
+
+        currentPlannerId = id;
+
+        // Switch to quick view with planner context
+        switchView('quick');
+        dom.setupScreen.dataset.fromPlanner = 'true';
+
+        // Show banner
+        showPlannerBanner(task);
+
+        // Pre-fill task name
+        dom.taskNameInput.value = task.name;
+    }
+
+    function showPlannerBanner(task) {
+        var percent = Planner.getProgressPercent(task);
+        dom.plannerBannerName.textContent = task.name;
+        dom.plannerBannerProgress.textContent = '（已完成 ' + percent + '%）';
+        dom.plannerTaskBanner.classList.remove('hidden');
+    }
+
+    function hidePlannerBanner() {
+        dom.plannerTaskBanner.classList.add('hidden');
+        currentPlannerId = '';
+    }
+
+    function updatePlannerProgress(hours) {
+        if (!currentPlannerId) return;
+        Planner.updateProgress(currentPlannerId, hours);
+    }
 
     // --- Init ---
     function init() {
@@ -1309,6 +1906,9 @@ body.flow-mode .abandon-btn:hover {
                 renderNotebook();
             }
         });
+
+        // Init Planner
+        initPlanner();
 
         // Visibility change: sync timer immediately when tab becomes visible
         document.addEventListener('visibilitychange', function () {
@@ -1365,6 +1965,12 @@ body.flow-mode .abandon-btn:hover {
 
         if (tab === 'focus') {
             dom.focusTab.style.display = '';
+            // Reset to quick view
+            dom.setupScreen.classList.remove('hidden');
+            dom.plannerView.classList.add('hidden');
+            dom.viewBtns.forEach(function (btn) {
+                btn.classList.toggle('active', btn.dataset.view === 'quick');
+            });
         } else if (tab === 'garden') {
             dom.gardenTab.classList.remove('hidden');
             Garden.checkGrowth();
@@ -1399,6 +2005,22 @@ body.flow-mode .abandon-btn:hover {
         syncTimerFromClock();
 
         dom.timerTaskName.textContent = state.taskName;
+
+        // Show planner info if from planner
+        if (currentPlannerId) {
+            var task = Planner.getTask(currentPlannerId);
+            if (task) {
+                var percent = Planner.getProgressPercent(task);
+                dom.timerPlannerInfo.innerHTML = '📋 规划任务：' + escapeHtml(task.name) + 
+                    ' | 进度：' + task.completedHours.toFixed(1) + '/' + task.totalHours + '小时 (' + percent + '%)';
+                dom.timerPlannerInfo.classList.remove('hidden');
+            }
+            dom.timerScreen.dataset.plannerId = currentPlannerId;
+        } else {
+            dom.timerPlannerInfo.classList.add('hidden');
+            dom.timerScreen.dataset.plannerId = '';
+        }
+
         showScreen('timer');
         updateDisplay();
         updateFlower();
@@ -1560,6 +2182,9 @@ body.flow-mode .abandon-btn:hover {
         state.timerInterval = null;
         dom.timeDisplay.classList.remove('running');
 
+        // Calculate flow hours for planner
+        var flowHours = state.flowSeconds / 3600;
+
         // Stop particles
         stopFlowParticles();
 
@@ -1568,6 +2193,11 @@ body.flow-mode .abandon-btn:hover {
 
         // Reward: 1 迷幻蘑菇
         Garden.addItem('psychedelic_mushroom', 1);
+
+        // Update planner progress for flow time
+        if (currentPlannerId) {
+            updatePlannerProgress(flowHours);
+        }
 
         // Update the existing record to include flow duration
         var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
@@ -1692,6 +2322,9 @@ body.flow-mode .abandon-btn:hover {
         dom.timeDisplay.classList.remove('running');
         playCompletionSound();
 
+        // Calculate completed hours
+        var completedHours = state.elapsedSeconds / 3600;
+
         // Save record
         if (!state.recorded) {
             saveRecord(true);
@@ -1699,6 +2332,11 @@ body.flow-mode .abandon-btn:hover {
             // Drop: completed task gives 1 甜甜花苗 + 2 小水滴
             Garden.addItem('sweet_seedling', 1);
             Garden.addItem('water_drop', 2);
+
+            // Update planner progress
+            if (currentPlannerId) {
+                updatePlannerProgress(completedHours);
+            }
         }
 
         dom.finalDuration.textContent = Math.round(state.elapsedSeconds / 60);
@@ -1715,12 +2353,20 @@ body.flow-mode .abandon-btn:hover {
             return;
         }
 
+        // Calculate completed hours before reset
+        var completedHours = state.elapsedSeconds / 3600;
+
         // Save incomplete record if timer was running
         if (!fromCompletion && state.timerInterval && state.elapsedSeconds > 10 && !state.recorded) {
             saveRecord(false);
             state.recorded = true;
             // Drop: failed task gives 1 枯萎的甜甜花
             Garden.addItem('wilted_flower', 1);
+
+            // Update planner progress even if abandoned (still count the time spent)
+            if (currentPlannerId) {
+                updatePlannerProgress(completedHours);
+            }
         }
 
         if (state.timerInterval) {
@@ -1750,6 +2396,13 @@ body.flow-mode .abandon-btn:hover {
         // Reset setup to phase 1
         dom.setupPhase1.style.display = '';
         dom.setupPhase2.classList.add('hidden');
+
+        // Reset planner context
+        hidePlannerBanner();
+        dom.timerPlannerInfo.classList.add('hidden');
+        dom.viewBtns.forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.view === 'quick');
+        });
 
         showScreen('setup');
     }
@@ -1803,7 +2456,7 @@ body.flow-mode .abandon-btn:hover {
         var records = JSON.parse(localStorage.getItem('dingding-records') || '[]');
         var t = state.startTime || new Date();
 
-        records.push({
+        var record = {
             year: t.getFullYear(),
             month: t.getMonth() + 1,
             day: t.getDate(),
@@ -1814,8 +2467,18 @@ body.flow-mode .abandon-btn:hover {
             ding: state.dingCount,
             wei: state.weiCount,
             completed: completed
-        });
+        };
 
+        // Mark if from planner
+        if (currentPlannerId) {
+            var task = Planner.getTask(currentPlannerId);
+            if (task) {
+                record.fromPlanner = true;
+                record.plannerTaskName = task.name;
+            }
+        }
+
+        records.push(record);
         localStorage.setItem('dingding-records', JSON.stringify(records));
     }
 
@@ -1857,13 +2520,15 @@ body.flow-mode .abandon-btn:hover {
 
             if (!record.completed) {
                 var elapsed = record.elapsedMinutes || '?';
-                text = timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
+                var plannerTag = record.fromPlanner ? '📋 ' : '';
+                text = timeStr + '，你进行了' + dur + '分钟的"' + plannerTag + record.name + '"的专注任务，' +
                     '然而在' + elapsed + '分钟的时候，你就萎了，你放弃了任务，' +
                     '做了一次<span class="quality-low">窝囊废</span>';
             } else {
                 var qt = getQualityText(record);
                 var qc = getQualityClass(record);
-                text = timeStr + '，你进行了' + dur + '分钟的"' + record.name + '"的专注任务，' +
+                var plannerTag = record.fromPlanner ? '📋 ' : '';
+                text = timeStr + '，你进行了' + dur + '分钟的"' + plannerTag + record.name + '"的专注任务，' +
                     '过程中你顶了' + record.ding + '次，萎了' + record.wei + '次，' +
                     '你进入了<span class="' + qc + '">' + qt + '</span>的心流';
                 // Flow state addition
