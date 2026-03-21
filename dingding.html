@@ -1175,10 +1175,100 @@ body.flow-mode .abandon-btn:hover {
         border-color: rgba(102, 187, 106, 0.6);
     }
 
-    .planner-start-btn.completed {
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 160, 0, 0.2));
-        border-color: rgba(255, 215, 0, 0.4);
-        color: #FFD700;
+    .planner-item-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .planner-done-btn {
+        flex: 1;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .planner-done-btn:hover {
+        background: rgba(102, 187, 106, 0.2);
+        border-color: rgba(102, 187, 106, 0.4);
+        color: #66BB6A;
+    }
+
+    /* Archive Section */
+    .planner-archive-section {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .planner-archive-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 0 4px;
+    }
+
+    .planner-archive-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .planner-archive-count {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.35);
+    }
+
+    .planner-archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .planner-archive-item {
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .planner-archive-item:hover {
+        opacity: 1;
+    }
+
+    .planner-archive-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .planner-archive-item-name {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: line-through;
+    }
+
+    .planner-archive-item-meta {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .planner-archive-item-check {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(102, 187, 106, 0.2);
+        color: #66BB6A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
     }
 
     .planner-empty {
@@ -1258,6 +1348,12 @@ body.flow-mode .abandon-btn:hover {
         }
         .planner-form {
             padding: 18px;
+        }
+        .planner-item-actions {
+            flex-direction: column;
+        }
+        .planner-done-btn {
+            padding: 12px;
         }
     }
 
@@ -1633,6 +1729,7 @@ body.flow-mode .abandon-btn:hover {
     // ============================================
     var Planner = (function () {
         var STORAGE_KEY = 'dingding-planner';
+        var ARCHIVE_KEY = 'dingding-planner-archive';
 
         function loadTasks() {
             var raw = localStorage.getItem(STORAGE_KEY);
@@ -1640,8 +1737,18 @@ body.flow-mode .abandon-btn:hover {
             try { return JSON.parse(raw); } catch (e) { return []; }
         }
 
+        function loadArchivedTasks() {
+            var raw = localStorage.getItem(ARCHIVE_KEY);
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch (e) { return []; }
+        }
+
         function saveTasks(tasks) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        }
+
+        function saveArchivedTasks(tasks) {
+            localStorage.setItem(ARCHIVE_KEY, JSON.stringify(tasks));
         }
 
         function generateId() {
@@ -1668,14 +1775,37 @@ body.flow-mode .abandon-btn:hover {
             return tasks;
         }
 
+        function archiveTask(id) {
+            var tasks = loadTasks();
+            var task = tasks.find(function (t) { return t.id === id; });
+            if (!task) return null;
+
+            // Remove from active tasks
+            tasks = tasks.filter(function (t) { return t.id !== id; });
+            saveTasks(tasks);
+
+            // Add to archived tasks with archive timestamp
+            var archived = loadArchivedTasks();
+            task.archivedAt = new Date().toISOString();
+            archived.unshift(task); // Add to beginning (newest first)
+            saveArchivedTasks(archived);
+
+            return { active: tasks, archived: archived };
+        }
+
         function updateProgress(id, hours) {
             var tasks = loadTasks();
             var task = tasks.find(function (t) { return t.id === id; });
             if (task) {
                 task.completedHours = Math.min(task.completedHours + hours, task.totalHours);
                 saveTasks(tasks);
+
+                // Auto-archive if 100% complete
+                if (task.completedHours >= task.totalHours) {
+                    return archiveTask(id);
+                }
             }
-            return tasks;
+            return { active: tasks, archived: loadArchivedTasks() };
         }
 
         function getTask(id) {
@@ -1689,8 +1819,10 @@ body.flow-mode .abandon-btn:hover {
 
         return {
             loadTasks: loadTasks,
+            loadArchivedTasks: loadArchivedTasks,
             addTask: addTask,
             deleteTask: deleteTask,
+            archiveTask: archiveTask,
             updateProgress: updateProgress,
             getTask: getTask,
             getProgressPercent: getProgressPercent
@@ -1759,40 +1891,63 @@ body.flow-mode .abandon-btn:hover {
 
     function renderPlanner() {
         var tasks = Planner.loadTasks();
+        var archived = Planner.loadArchivedTasks();
         var html = '';
 
+        // Active tasks section
         if (tasks.length === 0) {
-            dom.plannerList.innerHTML = '';
             dom.plannerEmpty.classList.remove('hidden');
-            return;
+        } else {
+            dom.plannerEmpty.classList.add('hidden');
+
+            tasks.forEach(function (task) {
+                var percent = Planner.getProgressPercent(task);
+                var progressText = task.completedHours.toFixed(1) + ' / ' + task.totalHours + ' 小时';
+
+                html += '<div class="planner-item glass-card" data-id="' + task.id + '">';
+                html += '<div class="planner-item-header">';
+                html += '<span class="planner-item-name">' + escapeHtml(task.name) + '</span>';
+                html += '<button class="planner-item-delete" data-delete="' + task.id + '">删除</button>';
+                html += '</div>';
+                html += '<div class="planner-progress-section">';
+                html += '<div class="planner-progress-bar-bg">';
+                html += '<div class="planner-progress-bar" style="width: ' + Math.min(percent, 100) + '%"></div>';
+                html += '</div>';
+                html += '<div class="planner-progress-text">';
+                html += '<span>' + progressText + '</span>';
+                html += '<span class="planner-progress-percent">' + percent + '%</span>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="planner-item-actions">';
+                html += '<button class="glass-btn planner-start-btn" data-start="' + task.id + '">开始该任务</button>';
+                html += '<button class="glass-btn planner-done-btn" data-done="' + task.id + '">✓ 标记为已完成</button>';
+                html += '</div>';
+                html += '</div>';
+            });
         }
 
-        dom.plannerEmpty.classList.add('hidden');
+        // Archived tasks section
+        if (archived.length > 0) {
+            html += '<div class="planner-archive-section">';
+            html += '<div class="planner-archive-header">';
+            html += '<span class="planner-archive-title">📦 已归档</span>';
+            html += '<span class="planner-archive-count">' + archived.length + ' 个任务</span>';
+            html += '</div>';
+            html += '<div class="planner-archive-list">';
 
-        tasks.forEach(function (task) {
-            var percent = Planner.getProgressPercent(task);
-            var isCompleted = percent >= 100;
-            var progressText = task.completedHours.toFixed(1) + ' / ' + task.totalHours + ' 小时';
+            archived.forEach(function (task) {
+                var archiveDate = task.archivedAt ? new Date(task.archivedAt).toLocaleDateString('zh-CN') : '未知时间';
+                html += '<div class="planner-archive-item glass-card">';
+                html += '<div class="planner-archive-item-info">';
+                html += '<span class="planner-archive-item-name">' + escapeHtml(task.name) + '</span>';
+                html += '<span class="planner-archive-item-meta">' + task.totalHours + '小时 | 完成于 ' + archiveDate + '</span>';
+                html += '</div>';
+                html += '<span class="planner-archive-item-check">✓</span>';
+                html += '</div>';
+            });
 
-            html += '<div class="planner-item glass-card" data-id="' + task.id + '">';
-            html += '<div class="planner-item-header">';
-            html += '<span class="planner-item-name">' + escapeHtml(task.name) + '</span>';
-            html += '<button class="planner-item-delete" data-delete="' + task.id + '">删除</button>';
-            html += '</div>';
-            html += '<div class="planner-progress-section">';
-            html += '<div class="planner-progress-bar-bg">';
-            html += '<div class="planner-progress-bar ' + (isCompleted ? 'completed' : '') + '" style="width: ' + Math.min(percent, 100) + '%"></div>';
-            html += '</div>';
-            html += '<div class="planner-progress-text">';
-            html += '<span>' + progressText + '</span>';
-            html += '<span class="planner-progress-percent ' + (isCompleted ? 'completed' : '') + '">' + percent + '%</span>';
-            html += '</div>';
-            html += '</div>';
-            html += '<button class="glass-btn planner-start-btn ' + (isCompleted ? 'completed' : '') + '" data-start="' + task.id + '">';
-            html += isCompleted ? '已完成 ✓' : '开始该任务';
-            html += '</button>';
-            html += '</div>';
-        });
+            html += '</div></div>';
+        }
 
         dom.plannerList.innerHTML = html;
 
@@ -1812,6 +1967,17 @@ body.flow-mode .abandon-btn:hover {
             btn.addEventListener('click', function () {
                 var id = this.dataset.start;
                 startPlannerTask(id);
+            });
+        });
+
+        // Bind done buttons
+        dom.plannerList.querySelectorAll('.planner-done-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var id = this.dataset.done;
+                if (confirm('确定要标记这个任务为已完成吗？它将移至已归档。')) {
+                    Planner.archiveTask(id);
+                    renderPlanner();
+                }
             });
         });
     }
@@ -1864,7 +2030,11 @@ body.flow-mode .abandon-btn:hover {
 
     function updatePlannerProgress(hours) {
         if (!currentPlannerId) return;
-        Planner.updateProgress(currentPlannerId, hours);
+        var result = Planner.updateProgress(currentPlannerId, hours);
+        // If task was auto-archived (reached 100%), clear currentPlannerId
+        if (result && result.active && !result.active.find(function (t) { return t.id === currentPlannerId; })) {
+            currentPlannerId = '';
+        }
     }
 
     // --- Init ---
